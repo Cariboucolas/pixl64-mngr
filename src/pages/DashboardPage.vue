@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useDeviceStore } from '../stores/device'
 import { useSettingsStore } from '../stores/settings'
 
-const _router = useRouter()
+const router = useRouter()
 const deviceStore = useDeviceStore()
 const settingsStore = useSettingsStore()
 

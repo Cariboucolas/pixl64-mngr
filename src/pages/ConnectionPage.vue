@@ -18,7 +18,7 @@ async function handleConnect(ip: string) {
   }
 }
 
-async function _handleManualConnect() {
+async function handleManualConnect() {
   const ip = manualIp.value.trim()
   if (!ip) return
   await handleConnect(ip)

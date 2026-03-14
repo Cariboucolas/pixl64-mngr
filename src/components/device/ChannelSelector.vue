@@ -8,7 +8,7 @@ defineEmits<{
   'update:modelValue': [value: number]
 }>()
 
-const _channels = [
+const channels = [
   { id: 0, label: 'Faces' },
   { id: 1, label: 'Cloud' },
   { id: 2, label: 'Visualizer' },

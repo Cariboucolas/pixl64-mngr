@@ -8,12 +8,12 @@ const imageData = ref<ImageData | null>(null)
 const sending = ref(false)
 const status = ref<string | null>(null)
 
-function _onImageLoaded(img: HTMLImageElement) {
+function onImageLoaded(img: HTMLImageElement) {
   imageData.value = resizeToCanvas(img, 64)
   status.value = null
 }
 
-async function _sendToDevice() {
+async function sendToDevice() {
   const client = deviceStore.getClient()
   if (!client || !imageData.value) return
 

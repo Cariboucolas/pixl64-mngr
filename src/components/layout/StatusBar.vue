@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useDeviceStore } from '../../stores/device'
 
-const _deviceStore = useDeviceStore()
+const deviceStore = useDeviceStore()
 </script>
 
 <template>

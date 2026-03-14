@@ -3,7 +3,7 @@ import { useDeviceStore } from '../stores/device'
 
 const deviceStore = useDeviceStore()
 
-async function _onBrightnessChange(value: number) {
+async function onBrightnessChange(value: number) {
   try {
     await deviceStore.setBrightness(value)
   } catch {
@@ -11,7 +11,7 @@ async function _onBrightnessChange(value: number) {
   }
 }
 
-async function _onChannelChange(value: number) {
+async function onChannelChange(value: number) {
   try {
     await deviceStore.setChannel(value)
   } catch {
@@ -19,7 +19,7 @@ async function _onChannelChange(value: number) {
   }
 }
 
-async function _onTogglePower() {
+async function onTogglePower() {
   try {
     await deviceStore.togglePower()
   } catch {
