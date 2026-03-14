@@ -5,6 +5,14 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "opener:default"
+    "opener:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "http://*:80/post" },
+        { "url": "https://app.divoom-gz.com/*" }
+      ]
+    },
+    "store:default"
   ]
 }
