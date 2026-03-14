@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{
   imageData: ImageData | null
@@ -13,7 +13,8 @@ function draw() {
   const canvas = canvasRef.value
   if (!canvas || !props.imageData) return
 
-  const ctx = canvas.getContext('2d')!
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
   const displaySize = GRID_SIZE * PIXEL_SIZE
   canvas.width = displaySize
   canvas.height = displaySize
@@ -23,7 +24,8 @@ function draw() {
   const tempCanvas = document.createElement('canvas')
   tempCanvas.width = props.imageData.width
   tempCanvas.height = props.imageData.height
-  const tempCtx = tempCanvas.getContext('2d')!
+  const tempCtx = tempCanvas.getContext('2d')
+  if (!tempCtx) return
   tempCtx.putImageData(props.imageData, 0, 0)
 
   ctx.drawImage(tempCanvas, 0, 0, displaySize, displaySize)

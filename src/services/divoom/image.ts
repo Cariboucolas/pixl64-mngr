@@ -6,7 +6,7 @@ export function encodeFrame(imageData: ImageData): string {
   const rgb = new Uint8Array(width * height * 3)
 
   for (let i = 0; i < width * height; i++) {
-    rgb[i * 3] = data[i * 4]       // R
+    rgb[i * 3] = data[i * 4] // R
     rgb[i * 3 + 1] = data[i * 4 + 1] // G
     rgb[i * 3 + 2] = data[i * 4 + 2] // B
   }
@@ -42,7 +42,8 @@ export function resizeToCanvas(
   const canvas = document.createElement('canvas')
   canvas.width = size
   canvas.height = size
-  const ctx = canvas.getContext('2d')!
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('Canvas 2D context unavailable')
   ctx.imageSmoothingEnabled = false
   ctx.drawImage(source, 0, 0, size, size)
   return ctx.getImageData(0, 0, size, size)

@@ -1,9 +1,13 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { DivoomClient } from '../services/divoom/client'
 import * as commands from '../services/divoom/commands'
-import type { DeviceSettings, DeviceResponse, DivoomDevice } from '../services/divoom/types'
 import { discoverDevices, validateDevice } from '../services/divoom/discovery'
+import type {
+  DeviceResponse,
+  DeviceSettings,
+  DivoomDevice,
+} from '../services/divoom/types'
 
 export const useDeviceStore = defineStore('device', () => {
   const ip = ref('')

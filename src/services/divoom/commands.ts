@@ -1,7 +1,10 @@
 import type { CommandPayload, SendHttpGifPayload } from './types'
 
 export function setBrightness(value: number): CommandPayload {
-  return { Command: 'Channel/SetBrightness', Brightness: Math.max(0, Math.min(100, value)) }
+  return {
+    Command: 'Channel/SetBrightness',
+    Brightness: Math.max(0, Math.min(100, value)),
+  }
 }
 
 export function powerOnOff(on: boolean): CommandPayload {
@@ -44,7 +47,10 @@ export function sendHttpGif(
 }
 
 export function setRotation(angle: 0 | 90 | 180 | 270): CommandPayload {
-  return { Command: 'Device/SetScreenRotationAngle', Mode: angle === 0 ? 0 : angle === 90 ? 1 : angle === 180 ? 2 : 3 }
+  return {
+    Command: 'Device/SetScreenRotationAngle',
+    Mode: angle === 0 ? 0 : angle === 90 ? 1 : angle === 180 ? 2 : 3,
+  }
 }
 
 export function setMirror(on: boolean): CommandPayload {

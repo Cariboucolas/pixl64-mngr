@@ -29,7 +29,8 @@ export const useSettingsStore = defineStore('settings', () => {
     if (saved) {
       lastDeviceIp.value = saved.lastDeviceIp ?? defaults.lastDeviceIp
       autoConnect.value = saved.autoConnect ?? defaults.autoConnect
-      defaultBrightness.value = saved.defaultBrightness ?? defaults.defaultBrightness
+      defaultBrightness.value =
+        saved.defaultBrightness ?? defaults.defaultBrightness
     }
     loaded.value = true
   }

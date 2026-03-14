@@ -1,7 +1,13 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { encodeFrame } from '../../src/services/divoom/image'
 
-function createTestImageData(width: number, height: number, r: number, g: number, b: number): ImageData {
+function createTestImageData(
+  width: number,
+  height: number,
+  r: number,
+  g: number,
+  b: number,
+): ImageData {
   const data = new Uint8ClampedArray(width * height * 4)
   for (let i = 0; i < width * height; i++) {
     data[i * 4] = r

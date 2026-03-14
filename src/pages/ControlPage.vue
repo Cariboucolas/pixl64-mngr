@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { useDeviceStore } from '../stores/device'
-import BrightnessSlider from '../components/device/BrightnessSlider.vue'
-import ChannelSelector from '../components/device/ChannelSelector.vue'
-import PowerToggle from '../components/device/PowerToggle.vue'
 
 const deviceStore = useDeviceStore()
 
-async function onBrightnessChange(value: number) {
+async function _onBrightnessChange(value: number) {
   try {
     await deviceStore.setBrightness(value)
   } catch {
@@ -14,7 +11,7 @@ async function onBrightnessChange(value: number) {
   }
 }
 
-async function onChannelChange(value: number) {
+async function _onChannelChange(value: number) {
   try {
     await deviceStore.setChannel(value)
   } catch {
@@ -22,7 +19,7 @@ async function onChannelChange(value: number) {
   }
 }
 
-async function onTogglePower() {
+async function _onTogglePower() {
   try {
     await deviceStore.togglePower()
   } catch {

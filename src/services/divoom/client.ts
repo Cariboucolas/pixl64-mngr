@@ -1,6 +1,6 @@
 import { fetch } from '@tauri-apps/plugin-http'
 import type { CommandPayload, DeviceResponse } from './types'
-import { DeviceHttpError, DeviceCommandError } from './types'
+import { DeviceCommandError, DeviceHttpError } from './types'
 
 export class DivoomClient {
   private readonly url: string
@@ -43,7 +43,9 @@ export class DivoomClient {
     const now = Date.now()
     const elapsed = now - this.lastRequestTime
     if (elapsed < this.minInterval) {
-      await new Promise((resolve) => setTimeout(resolve, this.minInterval - elapsed))
+      await new Promise((resolve) =>
+        setTimeout(resolve, this.minInterval - elapsed),
+      )
     }
     this.lastRequestTime = Date.now()
   }

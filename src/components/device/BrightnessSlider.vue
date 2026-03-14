@@ -13,9 +13,14 @@ const emit = defineEmits<{
 const localValue = ref(props.modelValue)
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-watch(() => props.modelValue, (v) => { localValue.value = v })
+watch(
+  () => props.modelValue,
+  (v) => {
+    localValue.value = v
+  },
+)
 
-function onInput(event: Event) {
+function _onInput(event: Event) {
   const value = Number((event.target as HTMLInputElement).value)
   localValue.value = value
   if (debounceTimer) clearTimeout(debounceTimer)

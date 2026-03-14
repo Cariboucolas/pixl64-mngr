@@ -5,9 +5,9 @@ const emit = defineEmits<{
   load: [image: HTMLImageElement]
 }>()
 
-const fileInput = ref<HTMLInputElement>()
+const _fileInput = ref<HTMLInputElement>()
 
-function onFileChange(event: Event) {
+function _onFileChange(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0]
   if (!file) return
 

@@ -1,8 +1,6 @@
 import type { CommandPayload, DeviceResponse } from './types'
 
 export class MockDivoomClient {
-  constructor(_ip: string) {}
-
   async send<T extends DeviceResponse>(payload: CommandPayload): Promise<T> {
     await new Promise((resolve) => setTimeout(resolve, 50))
 

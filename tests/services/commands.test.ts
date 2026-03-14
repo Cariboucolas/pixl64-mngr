@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
-  setBrightness,
-  powerOnOff,
-  setChannel,
-  getDeviceSettings,
-  resetHttpGifId,
   clearHttpText,
+  getDeviceSettings,
+  powerOnOff,
+  resetHttpGifId,
   sendHttpGif,
-  setRotation,
+  setBrightness,
+  setChannel,
   setMirror,
+  setRotation,
 } from '../../src/services/divoom/commands'
 
 describe('commands', () => {
@@ -80,14 +80,32 @@ describe('commands', () => {
   })
 
   it('setRotation maps angle to mode correctly', () => {
-    expect(setRotation(0)).toEqual({ Command: 'Device/SetScreenRotationAngle', Mode: 0 })
-    expect(setRotation(90)).toEqual({ Command: 'Device/SetScreenRotationAngle', Mode: 1 })
-    expect(setRotation(180)).toEqual({ Command: 'Device/SetScreenRotationAngle', Mode: 2 })
-    expect(setRotation(270)).toEqual({ Command: 'Device/SetScreenRotationAngle', Mode: 3 })
+    expect(setRotation(0)).toEqual({
+      Command: 'Device/SetScreenRotationAngle',
+      Mode: 0,
+    })
+    expect(setRotation(90)).toEqual({
+      Command: 'Device/SetScreenRotationAngle',
+      Mode: 1,
+    })
+    expect(setRotation(180)).toEqual({
+      Command: 'Device/SetScreenRotationAngle',
+      Mode: 2,
+    })
+    expect(setRotation(270)).toEqual({
+      Command: 'Device/SetScreenRotationAngle',
+      Mode: 3,
+    })
   })
 
   it('setMirror returns correct payload', () => {
-    expect(setMirror(true)).toEqual({ Command: 'Device/SetMirrorMode', Mode: 1 })
-    expect(setMirror(false)).toEqual({ Command: 'Device/SetMirrorMode', Mode: 0 })
+    expect(setMirror(true)).toEqual({
+      Command: 'Device/SetMirrorMode',
+      Mode: 1,
+    })
+    expect(setMirror(false)).toEqual({
+      Command: 'Device/SetMirrorMode',
+      Mode: 0,
+    })
   })
 })

@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import { useDeviceStore } from '../stores/device'
 import { useSettingsStore } from '../stores/settings'
-import DeviceCard from '../components/device/DeviceCard.vue'
 
 const deviceStore = useDeviceStore()
 const settingsStore = useSettingsStore()
@@ -19,7 +18,7 @@ async function handleConnect(ip: string) {
   }
 }
 
-async function handleManualConnect() {
+async function _handleManualConnect() {
   const ip = manualIp.value.trim()
   if (!ip) return
   await handleConnect(ip)

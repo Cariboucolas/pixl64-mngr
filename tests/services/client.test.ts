@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { MockDivoomClient } from '../../src/services/divoom/mock-client'
 
 describe('MockDivoomClient', () => {
@@ -17,7 +17,10 @@ describe('MockDivoomClient', () => {
 
   it('responds to any command with success', async () => {
     const client = new MockDivoomClient('192.168.1.100')
-    const result = await client.send({ Command: 'Channel/SetBrightness', Brightness: 50 })
+    const result = await client.send({
+      Command: 'Channel/SetBrightness',
+      Brightness: 50,
+    })
     expect(result.error_code).toBe(0)
   })
 })

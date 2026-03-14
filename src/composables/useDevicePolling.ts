@@ -1,6 +1,6 @@
 import { onUnmounted } from 'vue'
-import { useDeviceStore } from '../stores/device'
 import * as commands from '../services/divoom/commands'
+import { useDeviceStore } from '../stores/device'
 
 export function useDevicePolling(intervalMs: number = 10000) {
   const store = useDeviceStore()

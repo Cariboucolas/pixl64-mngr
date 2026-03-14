@@ -1,5 +1,5 @@
 import { fetch } from '@tauri-apps/plugin-http'
-import type { DivoomDevice, DiscoveryResponse, DeviceResponse } from './types'
+import type { DeviceResponse, DiscoveryResponse, DivoomDevice } from './types'
 
 const DISCOVERY_URL = 'https://app.divoom-gz.com/Device/ReturnSameLANDevice'
 

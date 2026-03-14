@@ -1,21 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useDeviceStore } from '../stores/device'
 import { resizeToCanvas, sendStaticImage } from '../services/divoom/image'
-import ImageUploader from '../components/image/ImageUploader.vue'
-import ImagePreview from '../components/image/ImagePreview.vue'
+import { useDeviceStore } from '../stores/device'
 
 const deviceStore = useDeviceStore()
 const imageData = ref<ImageData | null>(null)
 const sending = ref(false)
 const status = ref<string | null>(null)
 
-function onImageLoaded(img: HTMLImageElement) {
+function _onImageLoaded(img: HTMLImageElement) {
   imageData.value = resizeToCanvas(img, 64)
   status.value = null
 }
 
-async function sendToDevice() {
+async function _sendToDevice() {
   const client = deviceStore.getClient()
   if (!client || !imageData.value) return
 
@@ -26,7 +24,7 @@ async function sendToDevice() {
     await sendStaticImage(client, imageData.value)
     status.value = 'Image envoyée !'
   } catch (e) {
-    status.value = e instanceof Error ? e.message : 'Erreur lors de l\'envoi'
+    status.value = e instanceof Error ? e.message : "Erreur lors de l'envoi"
   } finally {
     sending.value = false
   }

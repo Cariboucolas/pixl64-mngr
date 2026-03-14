@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import SideNav from './SideNav.vue'
-import StatusBar from './StatusBar.vue'
 </script>
 
 <template>
