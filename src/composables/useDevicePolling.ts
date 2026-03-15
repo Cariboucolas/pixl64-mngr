@@ -2,11 +2,11 @@ import { onUnmounted } from 'vue'
 import * as commands from '../services/divoom/commands'
 import { useDeviceStore } from '../stores/device'
 
-export function useDevicePolling(intervalMs: number = 10000) {
+export const useDevicePolling = (intervalMs: number = 10000) => {
   const store = useDeviceStore()
   let timer: ReturnType<typeof setInterval> | null = null
 
-  function start() {
+  const start = () => {
     stop()
     timer = setInterval(async () => {
       const client = store.getClient()
@@ -20,7 +20,7 @@ export function useDevicePolling(intervalMs: number = 10000) {
     }, intervalMs)
   }
 
-  function stop() {
+  const stop = () => {
     if (timer) {
       clearInterval(timer)
       timer = null

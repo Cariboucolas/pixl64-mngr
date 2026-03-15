@@ -1,7 +1,7 @@
 import type { DivoomClient } from './client'
 import * as commands from './commands'
 
-export function encodeFrame(imageData: ImageData): string {
+export const encodeFrame = (imageData: ImageData): string => {
   const { data, width, height } = imageData
   const rgb = new Uint8Array(width * height * 3)
 
@@ -14,7 +14,7 @@ export function encodeFrame(imageData: ImageData): string {
   return uint8ArrayToBase64(rgb)
 }
 
-function uint8ArrayToBase64(bytes: Uint8Array): string {
+const uint8ArrayToBase64 = (bytes: Uint8Array): string => {
   let binary = ''
   for (let i = 0; i < bytes.length; i++) {
     binary += String.fromCharCode(bytes[i])
@@ -22,10 +22,10 @@ function uint8ArrayToBase64(bytes: Uint8Array): string {
   return btoa(binary)
 }
 
-export async function sendStaticImage(
+export const sendStaticImage = async (
   client: DivoomClient,
   imageData: ImageData,
-): Promise<void> {
+): Promise<void> => {
   await client.send(commands.resetHttpGifId())
   await client.send(commands.clearHttpText())
   await client.send(commands.setChannel(4))
@@ -35,10 +35,10 @@ export async function sendStaticImage(
   await client.send(payload)
 }
 
-export function resizeToCanvas(
+export const resizeToCanvas = (
   source: HTMLImageElement | HTMLCanvasElement,
   size: number = 64,
-): ImageData {
+): ImageData => {
   const canvas = document.createElement('canvas')
   canvas.width = size
   canvas.height = size

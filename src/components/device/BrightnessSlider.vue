@@ -20,7 +20,7 @@ watch(
   },
 )
 
-function onInput(event: Event) {
+const onInput = (event: Event) => {
   const value = Number((event.target as HTMLInputElement).value)
   localValue.value = value
   if (debounceTimer) clearTimeout(debounceTimer)

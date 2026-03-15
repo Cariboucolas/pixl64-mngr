@@ -3,7 +3,7 @@ import type { DeviceResponse, DiscoveryResponse, DivoomDevice } from './types'
 
 const DISCOVERY_URL = 'https://app.divoom-gz.com/Device/ReturnSameLANDevice'
 
-export async function discoverDevices(): Promise<DivoomDevice[]> {
+export const discoverDevices = async (): Promise<DivoomDevice[]> => {
   const response = await fetch(DISCOVERY_URL, { method: 'POST' })
 
   if (!response.ok) {
@@ -19,7 +19,7 @@ export async function discoverDevices(): Promise<DivoomDevice[]> {
   return data.DeviceList ?? []
 }
 
-export async function validateDevice(ip: string): Promise<boolean> {
+export const validateDevice = async (ip: string): Promise<boolean> => {
   try {
     const response = await fetch(`http://${ip}:80/post`, {
       method: 'POST',

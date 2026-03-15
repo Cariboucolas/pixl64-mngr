@@ -24,7 +24,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
   let saveTimeout: ReturnType<typeof setTimeout> | null = null
 
-  async function hydrate(): Promise<void> {
+  const hydrate = async (): Promise<void> => {
     const saved = await storage.get<AppSettings>(STORAGE_KEY)
     if (saved) {
       lastDeviceIp.value = saved.lastDeviceIp ?? defaults.lastDeviceIp
@@ -35,7 +35,7 @@ export const useSettingsStore = defineStore('settings', () => {
     loaded.value = true
   }
 
-  function persist(): void {
+  const persist = (): void => {
     if (!loaded.value) return
     if (saveTimeout) clearTimeout(saveTimeout)
     saveTimeout = setTimeout(() => {

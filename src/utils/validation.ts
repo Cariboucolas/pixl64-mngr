@@ -1,6 +1,6 @@
 const IP_REGEX = /^(\d{1,3}\.){3}\d{1,3}$/
 
-export function isValidIp(ip: string): boolean {
+export const isValidIp = (ip: string): boolean => {
   if (!IP_REGEX.test(ip)) return false
   return ip.split('.').every((part) => {
     const n = Number(part)
@@ -8,6 +8,5 @@ export function isValidIp(ip: string): boolean {
   })
 }
 
-export function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value))
-}
+export const clamp = (value: number, min: number, max: number): number =>
+  Math.max(min, Math.min(max, value))

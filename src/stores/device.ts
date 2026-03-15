@@ -24,7 +24,7 @@ export const useDeviceStore = defineStore('device', () => {
 
   const isReady = computed(() => connected.value && client !== null)
 
-  async function connect(deviceIp: string): Promise<void> {
+  const connect = async (deviceIp: string): Promise<void> => {
     connecting.value = true
     error.value = null
 
@@ -54,33 +54,33 @@ export const useDeviceStore = defineStore('device', () => {
     }
   }
 
-  function disconnect(): void {
+  const disconnect = (): void => {
     client = null
     connected.value = false
     ip.value = ''
     error.value = null
   }
 
-  async function setBrightness(value: number): Promise<void> {
+  const setBrightness = async (value: number): Promise<void> => {
     if (!client) return
     await client.send(commands.setBrightness(value))
     brightness.value = value
   }
 
-  async function setChannel(index: number): Promise<void> {
+  const setChannel = async (index: number): Promise<void> => {
     if (!client) return
     await client.send(commands.setChannel(index))
     channel.value = index
   }
 
-  async function togglePower(): Promise<void> {
+  const togglePower = async (): Promise<void> => {
     if (!client) return
     const newState = !screenOn.value
     await client.send(commands.powerOnOff(newState))
     screenOn.value = newState
   }
 
-  async function discover(): Promise<void> {
+  const discover = async (): Promise<void> => {
     discovering.value = true
     error.value = null
     try {
@@ -93,9 +93,7 @@ export const useDeviceStore = defineStore('device', () => {
     }
   }
 
-  function getClient(): DivoomClient | null {
-    return client
-  }
+  const getClient = (): DivoomClient | null => client
 
   return {
     ip,

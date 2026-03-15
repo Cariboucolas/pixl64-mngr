@@ -9,7 +9,7 @@ const settingsStore = useSettingsStore()
 const manualIp = ref(settingsStore.lastDeviceIp)
 const manualError = ref<string | null>(null)
 
-async function handleConnect(ip: string) {
+const handleConnect = async (ip: string) => {
   manualError.value = null
   try {
     await deviceStore.connect(ip)
@@ -19,7 +19,7 @@ async function handleConnect(ip: string) {
   }
 }
 
-async function handleManualConnect() {
+const handleManualConnect = async () => {
   const ip = manualIp.value.trim()
   if (!ip) return
   await handleConnect(ip)
@@ -44,7 +44,7 @@ async function handleManualConnect() {
           type="submit"
           :disabled="deviceStore.connecting || !manualIp.trim()"
         >
-          {{ deviceStore.onConnect ? 'Connexion...' : 'Connecter' }}
+          {{ deviceStore.connecting ? 'Connexion...' : 'Connecter' }}
         </button>
       </form>
       <p v-if="manualError" class="error">{{ manualError }}</p>

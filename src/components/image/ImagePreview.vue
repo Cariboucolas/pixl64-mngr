@@ -9,7 +9,7 @@ const canvasRef = ref<HTMLCanvasElement>()
 const PIXEL_SIZE = 4
 const GRID_SIZE = 64
 
-function draw() {
+const draw = () => {
   const canvas = canvasRef.value
   if (!canvas || !props.imageData) return
 
