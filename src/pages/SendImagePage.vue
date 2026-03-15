@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import ImagePreview from '../components/image/ImagePreview.vue'
+import ImageUploader from '../components/image/ImageUploader.vue'
 import { resizeToCanvas, sendStaticImage } from '../services/divoom/image'
 import { useDeviceStore } from '../stores/device'
 

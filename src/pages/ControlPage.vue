@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import BrightnessSlider from '../components/device/BrightnessSlider.vue'
+import ChannelSelector from '../components/device/ChannelSelector.vue'
+import PowerToggle from '../components/device/PowerToggle.vue'
 import { useDeviceStore } from '../stores/device'
 
 const deviceStore = useDeviceStore()
