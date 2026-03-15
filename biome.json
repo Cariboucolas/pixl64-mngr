@@ -24,7 +24,8 @@
     "enabled": true,
     "rules": {
       "correctness": {
-        "noUnusedVariables": "off"
+        "noUnusedVariables": "off",
+        "noUnusedImports": "off"
       },
       "recommended": true
     }

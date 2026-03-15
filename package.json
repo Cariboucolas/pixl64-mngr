@@ -9,6 +9,7 @@
     "check": "biome check",
     "check:fix": "biome check --fix --unsafe",
     "format": "biome format",
+    "kill": "lsof -t -i:1420 -i:3000 -i:8085 -i:8080 -i:4400 -i:4500 -i:9150 -i:9099 -i:5000 -i:5001 -i:4000 -i:9229 | xargs kill -9 ",
     "preview": "vite preview",
     "tauri": "tauri",
     "test": "vitest run",
