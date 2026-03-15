@@ -1,7 +1,26 @@
-# Tauri + Vue + TypeScript
+# Pixl64 Mngr
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A cross-platform desktop app to control the Divoom Pixoo-64 LED panel.
 
-## Recommended IDE Setup
+Built with Tauri v2, Vue 3, TypeScript and Rust.
 
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+## Features
+
+- Device discovery on local network
+- Manual IP connection
+- Brightness, channel and power controls
+- Image upload, preview and display on the Pixoo-64
+
+## Development
+
+  ```bash
+  pnpm install
+  pnpm run tauri dev
+  ```
+  Tests
+  ```bash
+  pnpm test
+  ``` 
+## Documentations
+
+[Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
