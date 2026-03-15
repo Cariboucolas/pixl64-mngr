@@ -44,7 +44,7 @@ async function handleManualConnect() {
           type="submit"
           :disabled="deviceStore.connecting || !manualIp.trim()"
         >
-          {{ deviceStore.connecting ? 'Connexion...' : 'Connecter' }}
+          {{ deviceStore.onConnect ? 'Connexion...' : 'Connecter' }}
         </button>
       </form>
       <p v-if="manualError" class="error">{{ manualError }}</p>

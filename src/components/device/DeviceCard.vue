@@ -3,7 +3,7 @@ import type { DivoomDevice } from '../../services/divoom/types'
 
 defineProps<{
   device: DivoomDevice
-  connecting: boolean
+  onConnect: boolean
 }>()
 
 defineEmits<{
@@ -22,7 +22,7 @@ defineEmits<{
       :disabled="connecting"
       @click="$emit('connect', device.DevicePrivateIP)"
     >
-      {{ connecting ? 'Connexion...' : 'Connecter' }}
+      {{ onConnect ? 'Connexion...' : 'Connecter' }}
     </button>
   </div>
 </template>

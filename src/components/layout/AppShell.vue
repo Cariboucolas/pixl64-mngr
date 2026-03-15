@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import { useDeviceStore } from '../../stores/device.ts'
 import SideNav from './SideNav.vue'
 import StatusBar from './StatusBar.vue'
+
+const deviceStore = useDeviceStore()
 </script>
 
 <template>
   <div class="app-shell">
-    <SideNav />
+    <SideNav v-if="deviceStore.connected"/>
     <div class="app-content">
       <RouterView />
       <StatusBar />
