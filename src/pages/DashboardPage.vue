@@ -44,20 +44,6 @@ onMounted(async () => {
         <button class="primary" @click="router.push('/connect')">
           {{ deviceStore.connected ? 'Changer d\'appareil' : 'Se connecter' }}
         </button>
-        <button
-          class="primary"
-          :disabled="!deviceStore.connected"
-          @click="router.push('/controls')"
-        >
-          Contrôles
-        </button>
-        <button
-          class="primary"
-          :disabled="!deviceStore.connected"
-          @click="router.push('/send')"
-        >
-          Envoyer image
-        </button>
       </div>
     </div>
   </div>
