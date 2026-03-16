@@ -3,7 +3,7 @@ import type { DivoomDevice } from '../../services/divoom/types'
 
 defineProps<{
   device: DivoomDevice
-  connecting: boolean
+  status: 'connected' | 'connecting' | 'available'
 }>()
 
 defineEmits<{
@@ -17,12 +17,16 @@ defineEmits<{
       <span class="device-name">{{ device.DeviceName }}</span>
       <span class="device-ip">{{ device.DevicePrivateIP }}</span>
     </div>
+    <div v-if="status === 'connected'" class="current-device">
+      <span>Connecté</span>
+    </div>
     <button
+      v-else
       class="primary"
-      :disabled="connecting"
+      :disabled="status === 'connecting'"
       @click="$emit('connect', device.DevicePrivateIP)"
     >
-      {{ connecting ? 'Connexion...' : 'Connecter' }}
+      {{ status === 'connecting' ? 'Connexion...' : 'Connecter' }}
     </button>
   </div>
 </template>
@@ -51,5 +55,9 @@ defineEmits<{
 .device-ip {
   font-size: 0.8rem;
   color: var(--color-text-secondary);
+}
+
+.current-device {
+  color: var(--color-success);
 }
 </style>

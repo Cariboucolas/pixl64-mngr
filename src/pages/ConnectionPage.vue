@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import DeviceCard from '../components/device/DeviceCard.vue'
+import type { DivoomDevice } from '../services/divoom/types.ts'
 import { useDeviceStore } from '../stores/device'
 import { useSettingsStore } from '../stores/settings'
 
@@ -23,6 +24,12 @@ const handleManualConnect = async () => {
   const ip = manualIp.value.trim()
   if (!ip) return
   await handleConnect(ip)
+}
+
+const getDeviceStatus = (device: DivoomDevice) => {
+  if (device.DevicePrivateIP === deviceStore.ip) return 'connected'
+  if (deviceStore.connecting) return 'connecting'
+  return 'available'
 }
 </script>
 
@@ -67,20 +74,15 @@ const handleManualConnect = async () => {
       <div v-if="deviceStore.discoveredDevices.length" class="device-list">
         <DeviceCard
           v-for="device in deviceStore.discoveredDevices"
+          :status="getDeviceStatus(device)"
           :key="device.DeviceId"
           :device="device"
-          :connecting="deviceStore.connecting"
           @connect="handleConnect"
         />
       </div>
       <p v-else class="hint">
         Cliquez sur "Rechercher" pour détecter les appareils sur le réseau local.
       </p>
-    </section>
-
-    <section v-if="deviceStore.connected" class="section connected-info">
-      <p>Connecté à <strong>{{ deviceStore.ip }}</strong></p>
-      <button class="primary" @click="deviceStore.disconnect()">Déconnecter</button>
     </section>
   </div>
 </template>
@@ -132,15 +134,5 @@ const handleManualConnect = async () => {
 .hint {
   color: var(--color-text-secondary);
   font-size: 0.85rem;
-}
-
-.connected-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-success);
-  border-radius: var(--radius);
 }
 </style>
