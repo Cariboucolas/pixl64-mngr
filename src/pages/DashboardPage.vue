@@ -10,23 +10,16 @@ const deviceStore = useDeviceStore()
   <div class="page">
     <h1>Dashboard</h1>
 
-    <div class="status-card" :class="deviceStore.connected ? 'connected' : 'disconnected'">
+    <div class="status-card connected">
       <span class="dot"></span>
-      <span v-if="deviceStore.connected">
+      <span>
         Connecté à <strong>{{ deviceStore.ip }}</strong>
         — Luminosité : {{ deviceStore.brightness }}%
       </span>
-      <span v-else>Aucun appareil connecté</span>
     </div>
-
-    <div class="quick-actions">
-      <h2>Actions rapides</h2>
-      <div class="actions-grid">
-        <button class="primary" @click="router.push('/connect')">
-          {{ deviceStore.connected ? 'Changer d\'appareil' : 'Se connecter' }}
-        </button>
-      </div>
-    </div>
+    <button class="primary" @click="router.push('/connect')">
+      Changer d'appareil
+    </button>
   </div>
 </template>
 
@@ -46,10 +39,6 @@ const deviceStore = useDeviceStore()
   border-color: var(--color-success);
 }
 
-.status-card.disconnected {
-  border-color: var(--color-danger);
-}
-
 .dot {
   width: 10px;
   height: 10px;
@@ -59,21 +48,5 @@ const deviceStore = useDeviceStore()
 
 .connected .dot {
   background-color: var(--color-success);
-}
-
-.disconnected .dot {
-  background-color: var(--color-danger);
-}
-
-.quick-actions h2 {
-  font-size: 1rem;
-  margin-bottom: 0.75rem;
-  color: var(--color-text-secondary);
-}
-
-.actions-grid {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
 }
 </style>
