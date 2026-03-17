@@ -1,28 +1,9 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDeviceStore } from '../stores/device'
-import { useSettingsStore } from '../stores/settings'
 
 const router = useRouter()
 const deviceStore = useDeviceStore()
-const settingsStore = useSettingsStore()
-
-onMounted(async () => {
-  await settingsStore.hydrate()
-
-  if (
-    settingsStore.autoConnect &&
-    settingsStore.lastDeviceIp &&
-    !deviceStore.connected
-  ) {
-    try {
-      await deviceStore.connect(settingsStore.lastDeviceIp)
-    } catch {
-      // silent — user will see status bar
-    }
-  }
-})
 </script>
 
 <template>

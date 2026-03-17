@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import DeviceCard from '../components/device/DeviceCard.vue'
 import type { DivoomDevice } from '../services/divoom/types.ts'
@@ -22,6 +22,18 @@ const handleConnect = async (ip: string) => {
     manualError.value = e instanceof Error ? e.message : 'Erreur de connexion'
   }
 }
+
+onMounted(async () => {
+  await settingsStore.hydrate()
+
+  if (
+    settingsStore.autoConnect &&
+    settingsStore.lastDeviceIp &&
+    !deviceStore.connected
+  ) {
+    await handleConnect(settingsStore.lastDeviceIp)
+  }
+})
 
 const handleManualConnect = async () => {
   const ip = manualIp.value.trim()
