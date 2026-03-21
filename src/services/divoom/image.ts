@@ -48,3 +48,14 @@ export const resizeToCanvas = (
   ctx.drawImage(source, 0, 0, size, size)
   return ctx.getImageData(0, 0, size, size)
 }
+
+export const computeCropParams = (
+  sourceWidth: number,
+  sourceHeight: number,
+  offSetX: number,
+  offSetY: number,
+  scale: number,
+  size: number,
+) => {
+  return { sourceWidth, sourceHeight, offSetX, offSetY, scale, size }
+}
