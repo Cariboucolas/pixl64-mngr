@@ -69,15 +69,15 @@ describe('computeCropParams', () => {
       size,
     )
 
-    // Then
-    expect(params.sourceX).toBe(0)
-    expect(params.sourceY).toBe(0)
-    expect(params.sourceWidth).toBe(50)
-    expect(params.sourceHeight).toBe(50)
-    expect(params.destinationX).toBe(0)
-    expect(params.destinationY).toBe(0)
-    expect(params.destinationWidth).toBe(64)
-    expect(params.destinationHeight).toBe(64)
+    // Then — aucun clipping, on lit toute la source et on la dessine telle quelle
+    expect(params.readX).toBe(0)
+    expect(params.readY).toBe(0)
+    expect(params.readWidth).toBe(50)
+    expect(params.readHeight).toBe(50)
+    expect(params.drawX).toBe(0)
+    expect(params.drawY).toBe(0)
+    expect(params.drawWidth).toBe(50)
+    expect(params.drawHeight).toBe(50)
   })
 
   it('clips source that overflows the output canvas', () => {
@@ -99,15 +99,15 @@ describe('computeCropParams', () => {
       size,
     )
 
-    // Then
-    expect(params.sourceX).toBe(0)
-    expect(params.sourceY).toBe(0)
-    expect(params.sourceWidth).toBe(64)
-    expect(params.sourceHeight).toBe(64)
-    expect(params.destinationX).toBe(0)
-    expect(params.destinationY).toBe(0)
-    expect(params.destinationWidth).toBe(64)
-    expect(params.destinationHeight).toBe(64)
+    // Then — on ne lit que 64px de la source (le reste déborde)
+    expect(params.readX).toBe(0)
+    expect(params.readY).toBe(0)
+    expect(params.readWidth).toBe(64)
+    expect(params.readHeight).toBe(64)
+    expect(params.drawX).toBe(0)
+    expect(params.drawY).toBe(0)
+    expect(params.drawWidth).toBe(64)
+    expect(params.drawHeight).toBe(64)
   })
 
   it('clips negative offset (panned left/up)', () => {
@@ -129,15 +129,15 @@ describe('computeCropParams', () => {
       size,
     )
 
-    // Then
-    expect(params.sourceX).toBe(20)
-    expect(params.sourceY).toBe(10)
-    expect(params.sourceWidth).toBe(64)
-    expect(params.sourceHeight).toBe(64)
-    expect(params.destinationX).toBe(0)
-    expect(params.destinationY).toBe(0)
-    expect(params.destinationWidth).toBe(64)
-    expect(params.destinationHeight).toBe(64)
+    // Then — le clipping compense l'offset négatif
+    expect(params.readX).toBe(20)
+    expect(params.readY).toBe(10)
+    expect(params.readWidth).toBe(64)
+    expect(params.readHeight).toBe(64)
+    expect(params.drawX).toBe(0)
+    expect(params.drawY).toBe(0)
+    expect(params.drawWidth).toBe(64)
+    expect(params.drawHeight).toBe(64)
   })
 
   it('applies scale correctly', () => {
@@ -159,14 +159,14 @@ describe('computeCropParams', () => {
       size,
     )
 
-    // Then
-    expect(params.sourceX).toBe(0)
-    expect(params.sourceY).toBe(0)
-    expect(params.sourceWidth).toBe(32)
-    expect(params.sourceHeight).toBe(32)
-    expect(params.destinationX).toBe(0)
-    expect(params.destinationY).toBe(0)
-    expect(params.destinationWidth).toBe(64)
-    expect(params.destinationHeight).toBe(64)
+    // Then — l'image zoomée (100x100) est clippée à 64x64
+    expect(params.readX).toBe(0)
+    expect(params.readY).toBe(0)
+    expect(params.readWidth).toBe(32)
+    expect(params.readHeight).toBe(32)
+    expect(params.drawX).toBe(0)
+    expect(params.drawY).toBe(0)
+    expect(params.drawWidth).toBe(64)
+    expect(params.drawHeight).toBe(64)
   })
 })

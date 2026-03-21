@@ -49,13 +49,47 @@ export const resizeToCanvas = (
   return ctx.getImageData(0, 0, size, size)
 }
 
+export interface CropDrawParams {
+  readX: number
+  readY: number
+  readWidth: number
+  readHeight: number
+  drawX: number
+  drawY: number
+  drawWidth: number
+  drawHeight: number
+}
+
 export const computeCropParams = (
   sourceWidth: number,
   sourceHeight: number,
-  offSetX: number,
-  offSetY: number,
+  offsetX: number,
+  offsetY: number,
   scale: number,
   size: number,
-) => {
-  return { sourceWidth, sourceHeight, offSetX, offSetY, scale, size }
+): CropDrawParams => {
+  const scaledWidth = sourceWidth * scale
+  const scaledHeight = sourceHeight * scale
+
+  const clippedDrawX = Math.max(0, offsetX)
+  const clippedDrawY = Math.max(0, offsetY)
+  const clippedDrawWidth = Math.min(offsetX + scaledWidth, size) - clippedDrawX
+  const clippedDrawHeight =
+    Math.min(offsetY + scaledHeight, size) - clippedDrawY
+
+  const readX = (clippedDrawX - offsetX) / scale
+  const readY = (clippedDrawY - offsetY) / scale
+  const readWidth = clippedDrawWidth / scale
+  const readHeight = clippedDrawHeight / scale
+
+  return {
+    readX,
+    readY,
+    readWidth,
+    readHeight,
+    drawX: clippedDrawX,
+    drawY: clippedDrawY,
+    drawWidth: clippedDrawWidth,
+    drawHeight: clippedDrawHeight,
+  }
 }
