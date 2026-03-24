@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { computeCropParams, encodeFrame } from '../../src/services/divoom/image'
 
 function createTestImageData(
@@ -69,7 +69,7 @@ describe('computeCropParams', () => {
       size,
     )
 
-    // Then — aucun clipping, on lit toute la source et on la dessine telle quelle
+    // Then — no clipping, We read the entire source image and draw it exactly as it is
     expect(params.readX).toBe(0)
     expect(params.readY).toBe(0)
     expect(params.readWidth).toBe(50)
@@ -99,7 +99,7 @@ describe('computeCropParams', () => {
       size,
     )
 
-    // Then — on ne lit que 64px de la source (le reste déborde)
+    // Then — Only 64px of the source image is displayed (the rest is cut off)
     expect(params.readX).toBe(0)
     expect(params.readY).toBe(0)
     expect(params.readWidth).toBe(64)
@@ -129,7 +129,7 @@ describe('computeCropParams', () => {
       size,
     )
 
-    // Then — le clipping compense l'offset négatif
+    // Then — The negative offset was compensated by clipping
     expect(params.readX).toBe(20)
     expect(params.readY).toBe(10)
     expect(params.readWidth).toBe(64)
@@ -159,7 +159,7 @@ describe('computeCropParams', () => {
       size,
     )
 
-    // Then — l'image zoomée (100x100) est clippée à 64x64
+    // Then — The zoomed-in image (100x100) is cropped to 64x64
     expect(params.readX).toBe(0)
     expect(params.readY).toBe(0)
     expect(params.readWidth).toBe(32)
@@ -168,5 +168,53 @@ describe('computeCropParams', () => {
     expect(params.drawY).toBe(0)
     expect(params.drawWidth).toBe(64)
     expect(params.drawHeight).toBe(64)
+  })
+})
+
+describe('extractCrop', () => {
+  it('calls drawImage with computed crop params', () => {
+    //  Given — we create a mock canvas
+    const mockDrawImage = vi.fn()
+    const mockGetImageData = vi.fn(() => ({
+      data: new Uint8ClampedArray(4),
+      width: 1,
+      height: 1,
+    }))
+    const mockCtx = {
+      drawImage: mockDrawImage,
+      getImageData: mockGetImageData,
+      imageSmoothingEnabled: true,
+    }
+
+    vi.spyOn(document, 'createElement').mockReturnValue({
+      width: 0,
+      height: 0,
+      getContext: () => mockCtx,
+    } as unknown as HTMLCanvasElement)
+
+    const fakeSource = {
+      naturalHeight: 80,
+      naturalWidth: 100,
+    } as HTMLImageElement
+
+    // When
+    extractCrop(fakeSource, 10, 20, 1.5, 60)
+
+    // Then
+    expect(mockDrawImage).toHaveBeenCalledOnce()
+    const args = mockDrawImage.mock.calls[0]
+    expect(args[0]).toBe(fakeSource)
+
+    const expected = computeCropParams(100, 80, 10, 20, 1.5, 64)
+    expect(args[1]).toBe(expected.readX)
+    expect(args[2]).toBe(expected.readY)
+    expect(args[3]).toBe(expected.readWidth)
+    expect(args[4]).toBe(expected.readHeight)
+    expect(args[5]).toBe(expected.drawX)
+    expect(args[6]).toBe(expected.drawY)
+    expect(args[7]).toBe(expected.drawWidth)
+    expect(args[8]).toBe(expected.drawHeight)
+
+    vi.restoreAllMocks()
   })
 })
