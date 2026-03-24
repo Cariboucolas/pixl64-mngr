@@ -1,5 +1,10 @@
+// @vitest-environment jsdom
 import { describe, expect, it, vi } from 'vitest'
-import { computeCropParams, encodeFrame } from '../../src/services/divoom/image'
+import {
+  computeCropParams,
+  encodeFrame,
+  extractCrop,
+} from '../../src/services/divoom/image'
 
 function createTestImageData(
   width: number,
@@ -195,10 +200,12 @@ describe('extractCrop', () => {
     const fakeSource = {
       naturalHeight: 80,
       naturalWidth: 100,
+      width: 100,
+      height: 80,
     } as HTMLImageElement
 
     // When
-    extractCrop(fakeSource, 10, 20, 1.5, 60)
+    extractCrop(fakeSource, 10, 20, 1.5, 64)
 
     // Then
     expect(mockDrawImage).toHaveBeenCalledOnce()

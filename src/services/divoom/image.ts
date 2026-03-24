@@ -93,3 +93,47 @@ export const computeCropParams = (
     drawHeight: clippedDrawHeight,
   }
 }
+
+export const extractCrop = (
+  source: HTMLImageElement | HTMLCanvasElement,
+  offsetX: number,
+  offsetY: number,
+  scale: number,
+  size: number = 64,
+): ImageData => {
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('Canvas 2D context unavailable')
+
+  ctx.imageSmoothingEnabled = false
+
+  const sourceWidth =
+    source instanceof HTMLImageElement ? source.naturalWidth : source.width
+  const sourceHeight =
+    source instanceof HTMLImageElement ? source.naturalHeight : source.height
+
+  const params = computeCropParams(
+    sourceWidth,
+    sourceHeight,
+    offsetX,
+    offsetY,
+    scale,
+    size,
+  )
+
+  ctx.drawImage(
+    source,
+    params.readX,
+    params.readY,
+    params.readWidth,
+    params.readHeight,
+    params.drawX,
+    params.drawY,
+    params.drawWidth,
+    params.drawHeight,
+  )
+
+  return ctx.getImageData(0, 0, size, size)
+}
