@@ -1,29 +1,36 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import ImageCropper from '../components/image/ImageCropper.vue'
 import ImagePreview from '../components/image/ImagePreview.vue'
 import ImageUploader from '../components/image/ImageUploader.vue'
-import { resizeToCanvas, sendStaticImage } from '../services/divoom/image'
+import { sendStaticImage } from '../services/divoom/image'
 import { useDeviceStore } from '../stores/device'
 
 const deviceStore = useDeviceStore()
-const imageData = ref<ImageData | null>(null)
+const sourceImage = ref<HTMLImageElement | null>(null)
+const croppedData = ref<ImageData | null>(null)
 const sending = ref(false)
 const status = ref<string | null>(null)
 
 const onImageLoaded = (img: HTMLImageElement) => {
-  imageData.value = resizeToCanvas(img, 64)
+  sourceImage.value = img
+  croppedData.value = null
   status.value = null
+}
+
+const onCrop = (imageData: ImageData) => {
+  croppedData.value = imageData
 }
 
 const sendToDevice = async () => {
   const client = deviceStore.getClient()
-  if (!client || !imageData.value) return
+  if (!client || !croppedData.value) return
 
   sending.value = true
   status.value = null
 
   try {
-    await sendStaticImage(client, imageData.value)
+    await sendStaticImage(client, croppedData.value)
     status.value = 'Image envoyée !'
   } catch (e) {
     status.value = e instanceof Error ? e.message : "Erreur lors de l'envoi"
@@ -40,11 +47,14 @@ const sendToDevice = async () => {
     <div class="send-layout">
       <ImageUploader @load="onImageLoaded" />
 
-      <ImagePreview :image-data="imageData" />
+      <div class="cropper-preview">
+        <ImageCropper :source="sourceImage" @crop="onCrop" />
+        <ImagePreview :image-data="croppedData" />
+      </div>
 
       <button
         class="primary"
-        :disabled="!imageData || !deviceStore.isReady || sending"
+        :disabled="!croppedData || !deviceStore.isReady || sending"
         @click="sendToDevice"
       >
         {{ sending ? 'Envoi...' : 'Envoyer au Pixoo-64' }}
@@ -62,12 +72,16 @@ const sendToDevice = async () => {
 </template>
 
 <style scoped>
+.cropper-preview {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
 .send-layout {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   align-items: flex-start;
-  max-width: 300px;
 }
 
 .error {
