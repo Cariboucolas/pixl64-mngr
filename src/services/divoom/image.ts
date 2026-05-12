@@ -14,6 +14,39 @@ export const encodeFrame = (imageData: ImageData): string => {
   return uint8ArrayToBase64(rgb)
 }
 
+export const imageDataToDataUrl = (imageData: ImageData): string => {
+  const canvas = document.createElement('canvas')
+  canvas.width = imageData.width
+  canvas.height = imageData.height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('Canvas 2D context unavailable')
+  ctx.putImageData(imageData, 0, 0)
+  return canvas.toDataURL('image/png')
+}
+
+export const dataUrlToImageData = (
+  dataUrl: string,
+  size: number = 64,
+): Promise<ImageData> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = size
+      canvas.height = size
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        reject(new Error('Canvas 2D context unavailable'))
+        return
+      }
+      ctx.drawImage(img, 0, 0, size, size)
+      resolve(ctx.getImageData(0, 0, size, size))
+    }
+    img.onerror = () => reject(new Error('impossible de charger le favori'))
+    img.src = dataUrl
+  })
+}
+
 const uint8ArrayToBase64 = (bytes: Uint8Array): string => {
   let binary = ''
   for (let i = 0; i < bytes.length; i++) {
