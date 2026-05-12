@@ -10,7 +10,9 @@
       "identifier": "http:default",
       "allow": [
         { "url": "http://*:80/post" },
-        { "url": "https://app.divoom-gz.com/*" }
+        { "url": "https://app.divoom-gz.com/*" },
+        { "url": "http://*" },
+        { "url": "https://*" }
       ]
     },
     "store:default"
