@@ -47,7 +47,7 @@ const sendToDevice = async () => {
     <div class="send-layout">
       <ImageUploader @load="onImageLoaded" />
 
-      <div class="cropper-preview">
+      <div v-if="sourceImage" class="cropper-preview">
         <ImageCropper :source="sourceImage" @crop="onCrop" />
         <ImagePreview :image-data="croppedData" />
       </div>
