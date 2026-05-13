@@ -27,6 +27,12 @@ const router = createRouter({
       name: 'send',
       component: () => import('../pages/SendImagePage.vue'),
     },
+    {
+      path: '/favorites',
+      meta: { requiresDevice: true },
+      name: 'favorites',
+      component: () => import('../pages/FavoritesPage.vue'),
+    }
   ],
 })
 

@@ -26,6 +26,9 @@ const onDisconnect = () => {
         <li>
           <RouterLink to="/send" active-class="active">Envoyer image</RouterLink>
         </li>
+        <li>
+          <RouterLink to="/favorites" active-class="active">Favoris</RouterLink>
+        </li>
       </ul>
       </div>
     <ul class="side-nav-footer">
