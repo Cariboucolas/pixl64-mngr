@@ -4,21 +4,25 @@ import { ref } from 'vue'
 import ImageCropper from '../components/image/ImageCropper.vue'
 import ImagePreview from '../components/image/ImagePreview.vue'
 import ImageUploader from '../components/image/ImageUploader.vue'
-import { sendStaticImage } from '../services/divoom/image'
+import {imageDataToDataUrl, sendStaticImage} from '../services/divoom/image'
 import { useDeviceStore } from '../stores/device'
+import { useFavoritesStore } from "../stores/favorites.ts";
 
 const MAX_FILE_SIZE_MB = 20
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
 const MAX_IMAGE_DIMENSION = 10_000
 
 const deviceStore = useDeviceStore()
-const sourceImage = ref<HTMLImageElement | null>(null)
-const croppedData = ref<ImageData | null>(null)
-const sending = ref(false)
-const status = ref<string | null>(null)
 const imageUrl = ref('')
-const urlLoading = ref(false)
+const croppedData = ref<ImageData | null>(null)
+const favoritesStore = useFavoritesStore()
+const favoriteLabel = ref('')
+const sending = ref(false)
+const showFavoriteForm = ref(false)
+const sourceImage = ref<HTMLImageElement | null>(null)
+const status = ref<string | null>(null)
 const urlError = ref<string | null>(null)
+const urlLoading = ref(false)
 
 const loadFromUrl = async () => {
   const url = imageUrl.value.trim()
@@ -93,6 +97,18 @@ const onCrop = (imageData: ImageData) => {
   croppedData.value = imageData
 }
 
+const saveAsFavorite = async () => {
+  if (!croppedData.value) return
+  const dataUrl = imageDataToDataUrl(croppedData.value)
+  await favoritesStore.add(dataUrl, favoriteLabel.value.trim() || undefined)
+  showFavoriteForm.value = false
+  status.value = 'Ajouté aux favoris !'
+}
+
+const dismissFavoriteForm = () => {
+  showFavoriteForm.value = false
+}
+
 const sendToDevice = async () => {
   const client = deviceStore.getClient()
   if (!client || !croppedData.value) return
@@ -103,6 +119,8 @@ const sendToDevice = async () => {
   try {
     await sendStaticImage(client, croppedData.value)
     status.value = 'Image envoyée !'
+    showFavoriteForm.value = true
+    favoriteLabel.value = ''
   } catch (e) {
     status.value = e instanceof Error ? e.message : "Erreur lors de l'envoi"
   } finally {
@@ -150,7 +168,27 @@ const sendToDevice = async () => {
         {{ sending ? 'Envoi...' : 'Envoyer au Pixoo-64' }}
       </button>
 
-      <p v-if="status" :class="status.includes('Erreur') ? 'error' : 'success'">
+      <div v-if="showFavoriteForm" class="favorite-form">
+        <p class="success">Image envoyée !</p>
+        <label class="favorite-label">
+          Nom du favori (optionnel)
+          <input
+              v-model="favoriteLabel"
+              type="text"
+              placeholder="Ex: Logo Halo"
+          />
+        </label>
+        <div class="favorite-actions">
+          <button class="primary" @click="saveAsFavorite">
+            Sauvegarder en favori
+          </button>
+          <button @click="dismissFavoriteForm">
+            Non merci
+          </button>
+        </div>
+      </div>
+
+      <p v-else-if="status" :class="status.includes('Erreur') ? 'error' : 'success'">
         {{ status }}
       </p>
 
@@ -162,6 +200,25 @@ const sendToDevice = async () => {
 </template>
 
 <style scoped>
+.favorite-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.favorite-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.favorite-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .url-form {
   display: flex;
   flex-direction: column;
