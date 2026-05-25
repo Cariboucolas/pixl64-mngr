@@ -4,6 +4,10 @@ import {
   computeCropParams,
   encodeFrame,
   extractCrop,
+  MAX_FILE_SIZE_BYTES,
+  MAX_IMAGE_DIMENSION,
+  validateImageDimensions,
+  validateImageResponse,
 } from '../../src/services/divoom/image'
 
 function createTestImageData(
@@ -22,6 +26,83 @@ function createTestImageData(
   }
   return { data, width, height, colorSpace: 'srgb' } as ImageData
 }
+
+describe('validateImageResponse', () => {
+  it('throws on non-ok response', async () => {
+    // Given
+    const response = new Response(null, { status: 404 })
+    // When & Then
+    await expect(validateImageResponse(response)).rejects.toThrow('404')
+  })
+
+  it('throws on non-image content-type', async () => {
+    // Given
+    const response = new Response(null, {
+      status: 200,
+      headers: { 'content-type': 'text/html' },
+    })
+    // When & Then
+    await expect(validateImageResponse(response)).rejects.toThrow(
+      "L'URL ne pointe pas vers une image",
+    )
+  })
+
+  it('throws when file too large', async () => {
+    // Given
+    const tooBig = new ArrayBuffer(MAX_FILE_SIZE_BYTES + 1)
+    const response = new Response(tooBig, {
+      status: 200,
+      headers: { 'content-type': 'image/png' },
+    })
+    // When & Then
+    await expect(validateImageResponse(response)).rejects.toThrow(
+      'trop volumineuse',
+    )
+  })
+
+  it('returns buffer on valid response', async () => {
+    // Given
+    const valid = new ArrayBuffer(100)
+    const response = new Response(valid, {
+      status: 200,
+      headers: { 'content-type': 'image/png' },
+    })
+    // When
+    const result = await validateImageResponse(response)
+
+    // Then
+    expect(result.byteLength).toBe(100)
+  })
+})
+
+describe('validateImageDimensions', () => {
+  it('throws when width exceeds max', () => {
+    // Given
+    const img = {
+      naturalWidth: MAX_IMAGE_DIMENSION + 1,
+      naturalHeight: 100,
+    } as HTMLImageElement
+    // When & Then
+    expect(() => validateImageDimensions(img)).toThrow('dimensions maximales')
+  })
+
+  it('throws when height exceeds max', () => {
+    // Given
+    const img = {
+      naturalWidth: 100,
+      naturalHeight: MAX_IMAGE_DIMENSION + 1,
+    } as HTMLImageElement
+    // When & Then
+    expect(() => validateImageDimensions(img)).toThrow('dimensions maximales')
+  })
+
+  it('does not throw when dimensions are within bounds', () => {
+    // Given
+    const img = { naturalWidth: 1920, naturalHeight: 1080 } as HTMLImageElement
+    // When & Then
+    expect(() => validateImageDimensions(img)).not.toThrow()
+  })
+})
 
 describe('encodeFrame', () => {
   it('converts RGBA ImageData to base64 RGB', () => {

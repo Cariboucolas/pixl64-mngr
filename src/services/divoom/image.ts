@@ -1,6 +1,41 @@
 import type { DivoomClient } from './client'
 import * as commands from './commands'
 
+export const MAX_FILE_SIZE_MB = 20
+export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+export const MAX_IMAGE_DIMENSION = 10_000
+
+export const validateImageResponse = async (
+  response: Response,
+): Promise<ArrayBuffer> => {
+  if (!response.ok) {
+    throw new Error(`Erreur HTTP! status: ${response.status}`)
+  }
+  const contentType = response.headers.get('content-type') || ''
+  if (!contentType.startsWith('image/')) {
+    throw new Error("L'URL ne pointe pas vers une image")
+  }
+  const buffer = await response.arrayBuffer()
+  if (buffer.byteLength > MAX_FILE_SIZE_BYTES) {
+    const actualMb = buffer.byteLength / (1024 * 1024)
+    throw new Error(
+      `L'image est trop volumineuse : ${actualMb.toFixed(2)} MB (maximum : ${MAX_FILE_SIZE_MB} MB).`,
+    )
+  }
+  return buffer
+}
+
+export const validateImageDimensions = (img: HTMLImageElement): void => {
+  if (
+    img.naturalWidth > MAX_IMAGE_DIMENSION ||
+    img.naturalHeight > MAX_IMAGE_DIMENSION
+  ) {
+    throw new Error(
+      `L'image dépasse les dimensions maximales de ${MAX_IMAGE_DIMENSION}x${MAX_IMAGE_DIMENSION}px`,
+    )
+  }
+}
+
 export const encodeFrame = (imageData: ImageData): string => {
   const { data, width, height } = imageData
   const rgb = new Uint8Array(width * height * 3)
@@ -42,7 +77,7 @@ export const dataUrlToImageData = (
       ctx.drawImage(img, 0, 0, size, size)
       resolve(ctx.getImageData(0, 0, size, size))
     }
-    img.onerror = () => reject(new Error('impossible de charger le favori'))
+    img.onerror = () => reject(new Error("impossible de charger l'image"))
     img.src = dataUrl
   })
 }

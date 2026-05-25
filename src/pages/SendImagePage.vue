@@ -4,13 +4,14 @@ import { ref } from 'vue'
 import ImageCropper from '../components/image/ImageCropper.vue'
 import ImagePreview from '../components/image/ImagePreview.vue'
 import ImageUploader from '../components/image/ImageUploader.vue'
-import {imageDataToDataUrl, sendStaticImage} from '../services/divoom/image'
+import {
+  imageDataToDataUrl,
+  sendStaticImage,
+  validateImageDimensions,
+  validateImageResponse,
+} from '../services/divoom/image'
 import { useDeviceStore } from '../stores/device'
-import { useFavoritesStore } from "../stores/favorites.ts";
-
-const MAX_FILE_SIZE_MB = 20
-const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
-const MAX_IMAGE_DIMENSION = 10_000
+import { useFavoritesStore } from '../stores/favorites.ts'
 
 const deviceStore = useDeviceStore()
 const imageUrl = ref('')
@@ -24,6 +25,16 @@ const status = ref<string | null>(null)
 const urlError = ref<string | null>(null)
 const urlLoading = ref(false)
 
+const loadImageFromBlob = (objectUrl: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = () =>
+      reject(new Error("Le fichier n'est pas une image valide"))
+    img.src = objectUrl
+  })
+}
+
 const loadFromUrl = async () => {
   const url = imageUrl.value.trim()
   if (!url) return
@@ -31,58 +42,20 @@ const loadFromUrl = async () => {
   urlLoading.value = true
   urlError.value = null
 
+  let blobUrl: string | null = null
   try {
     const response = await fetch(url)
-    if (!response.ok) {
-      urlError.value = `Erreur HTTP ${response.status}`
-      return
-    }
+    const buffer = await validateImageResponse(response)
 
-    const contentType = response.headers.get('content-type') || ''
-    if (!contentType.startsWith('image/')) {
-      urlError.value = "L'URL ne pointe pas vers une image"
-      return
-    }
-
-    const buffer = await response.arrayBuffer()
-    if (buffer.byteLength > MAX_FILE_SIZE) {
-      const maxMb = MAX_FILE_SIZE / (1024 * 1024)
-      const actualMb = buffer.byteLength / (1024 * 1024)
-
-      urlError.value = `L'image est trop volumineuse : ${actualMb.toFixed(2)} MB (maximum : ${maxMb.toFixed(0)} MB).`
-      return
-    }
-
-    const blob = new Blob([buffer])
-    const objectUrl = URL.createObjectURL(blob)
-
-    const img = new Image()
-    img.onload = () => {
-      URL.revokeObjectURL(objectUrl)
-
-      if (
-        img.naturalWidth > MAX_IMAGE_DIMENSION ||
-        img.naturalHeight > MAX_IMAGE_DIMENSION
-      ) {
-        urlError.value = `L'image dépasse les dimensions maximales de ${MAX_IMAGE_DIMENSION}x${MAX_IMAGE_DIMENSION}px`
-        urlLoading.value = false
-        return
-      }
-
-      onImageLoaded(img)
-      urlLoading.value = false
-    }
-
-    img.onerror = () => {
-      URL.revokeObjectURL(objectUrl)
-      urlError.value = "Le fichier n'est pas une image valide"
-      urlLoading.value = false
-    }
-
-    img.src = objectUrl
+    blobUrl = URL.createObjectURL(new Blob([buffer]))
+    const img = await loadImageFromBlob(blobUrl)
+    validateImageDimensions(img)
+    onImageLoaded(img)
   } catch (e) {
     urlError.value =
       e instanceof Error ? e.message : "Erreur lors du chargement de l'image"
+  } finally {
+    if (blobUrl) URL.revokeObjectURL(blobUrl)
     urlLoading.value = false
   }
 }
