@@ -1,43 +1,120 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from "vue";
-import {type Favorite, useFavoritesStore} from "../stores/favorites.ts";
-import {useDeviceStore} from "../stores/device.ts";
-import {dataUrlToImageData, sendStaticImage} from "../services/divoom/image.ts";
-import FavoriteCard from "../components/favorites/FavoriteCard.vue";
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import Grid3x3Icon from '../assets/icons/grid-3x3.svg?component'
 import Grid5x5Icon from '../assets/icons/grid-5x5.svg?component'
+import ConfirmDialog from '../components/common/ConfirmDialog.vue'
+import FavoriteCard, {
+  type CardState,
+} from '../components/favorites/FavoriteCard.vue'
+import {
+  dataUrlToImageData,
+  sendStaticImage,
+} from '../services/divoom/image.ts'
+import { useDeviceStore } from '../stores/device.ts'
+import { type Favorite, useFavoritesStore } from '../stores/favorites.ts'
 
+const SENT_FLASH_DURATION_MS = 2000
+const ERROR_FLASH_DURATION_MS = 5000
 
-const favoritesStore = useFavoritesStore();
+const favoritesStore = useFavoritesStore()
 const deviceStore = useDeviceStore()
 const query = ref('')
-const sending = ref(false)
-const status = ref<string | null>(null)
-const filteredItems = computed( () => query.value ? favoritesStore.search(query.value) : favoritesStore.items)
-const removeFavorite = async (id: string) => {
-  await favoritesStore.remove(id)
+const sendingId = ref<string | null>(null)
+const sentIds = ref<Set<string>>(new Set())
+const errorMessages = ref<Map<string, string>>(new Map())
+const pendingDeletion = ref<Favorite | null>(null)
+const columns = ref(3)
+
+const timeouts = new Set<ReturnType<typeof setTimeout>>()
+
+const filteredItems = computed(() =>
+  query.value ? favoritesStore.search(query.value) : favoritesStore.items,
+)
+
+const stateOf = (fav: Favorite): CardState => {
+  if (sendingId.value === fav.id) return 'sending'
+  if (sentIds.value.has(fav.id)) return 'sent'
+  if (errorMessages.value.has(fav.id)) return 'error'
+  if (sendingId.value !== null) return 'disabled'
+  return 'idle'
 }
+
+const scheduleCleanup = (callback: () => void, delay: number) => {
+  const timeoutId = setTimeout(() => {
+    callback()
+    timeouts.delete(timeoutId)
+  }, delay)
+  timeouts.add(timeoutId)
+}
+
+const flashSent = (id: string) => {
+  errorMessages.value.delete(id)
+  errorMessages.value = new Map(errorMessages.value)
+
+  const next = new Set(sentIds.value)
+  next.add(id)
+  sentIds.value = next
+
+  scheduleCleanup(() => {
+    const cleared = new Set(sentIds.value)
+    cleared.delete(id)
+    sentIds.value = cleared
+  }, SENT_FLASH_DURATION_MS)
+}
+
+const flashError = (id: string, message: string) => {
+  const next = new Map(errorMessages.value)
+  next.set(id, message)
+  errorMessages.value = next
+
+  scheduleCleanup(() => {
+    const cleared = new Map(errorMessages.value)
+    cleared.delete(id)
+    errorMessages.value = cleared
+  }, ERROR_FLASH_DURATION_MS)
+}
+
+const askRemove = (id: string) => {
+  const fav = favoritesStore.items.find((f) => f.id === id)
+  if (fav) pendingDeletion.value = fav
+}
+
+const confirmRemove = async () => {
+  const target = pendingDeletion.value
+  if (!target) return
+  pendingDeletion.value = null
+  await favoritesStore.remove(target.id)
+}
+
+const cancelRemove = () => {
+  pendingDeletion.value = null
+}
+
 const sendToDevice = async (fav: Favorite) => {
   const client = deviceStore.getClient()
   if (!client) return
 
-  sending.value = true
-  status.value = null
+  sendingId.value = fav.id
 
   try {
     const imageData = await dataUrlToImageData(fav.dataUrl)
     await sendStaticImage(client, imageData)
-    status.value = "Image envoyée !"
+    flashSent(fav.id)
   } catch (e) {
-    status.value = e instanceof Error ? e.message : "Erreur lors de l'envoi"
+    const message = e instanceof Error ? e.message : "Erreur lors de l'envoi"
+    flashError(fav.id, message)
   } finally {
-    sending.value = false
+    sendingId.value = null
   }
 }
-const columns = ref(3)
 
 onMounted(() => {
   favoritesStore.hydrate()
+})
+
+onUnmounted(() => {
+  timeouts.forEach(clearTimeout)
+  timeouts.clear()
 })
 </script>
 
@@ -56,22 +133,33 @@ onMounted(() => {
         </button>
       </div>
     </div>
-    <p v-if="status" :class="status.includes('Erreur') ? 'error' : 'success'">
-      {{ status }}
-    </p>
     <div class="favorites-grid" :style="{ 'grid-template-columns': `repeat(${columns}, 1fr)` }">
       <FavoriteCard
           v-for="fav in filteredItems"
           :key="fav.id"
           :favorite="fav"
-          :sending="sending"
+          :state="stateOf(fav)"
+          :error-message="errorMessages.get(fav.id)"
           @send="sendToDevice"
-          @remove="removeFavorite"
+          @remove="askRemove"
       />
     </div>
     <p v-if="favoritesStore.loaded && !filteredItems.length">
       {{ query ? 'Aucun résultat' : 'Aucun favori' }}
     </p>
+
+    <ConfirmDialog
+        :open="pendingDeletion !== null"
+        title="Supprimer ce favori ?"
+        :message="pendingDeletion?.label
+          ? `« ${pendingDeletion.label} » sera supprimé définitivement.`
+          : 'Ce favori sera supprimé définitivement.'"
+        confirm-label="Supprimer"
+        cancel-label="Annuler"
+        destructive
+        @confirm="confirmRemove"
+        @cancel="cancelRemove"
+    />
   </div>
 </template>
 

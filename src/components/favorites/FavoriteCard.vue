@@ -1,17 +1,25 @@
+<script lang="ts">
+export type CardState = 'idle' | 'sending' | 'sent' | 'error' | 'disabled'
+</script>
+
 <script setup lang="ts">
-import type { Favorite } from "../../stores/favorites.ts";
-import TrashIcon from '../../assets/icons/trash.svg?component';
-import SendIcon from '../../assets/icons/send.svg?component';
+import AlertIcon from '../../assets/icons/alert.svg?component'
+import CheckIcon from '../../assets/icons/check.svg?component'
+import LoaderIcon from '../../assets/icons/loader.svg?component'
+import SendIcon from '../../assets/icons/send.svg?component'
+import TrashIcon from '../../assets/icons/trash.svg?component'
+import type { Favorite } from '../../stores/favorites.ts'
 
 defineProps<{
-  favorite: Favorite;
-  sending?: boolean;
-}>();
+  favorite: Favorite
+  state: CardState
+  errorMessage?: string
+}>()
 
 defineEmits<{
-  send: [fav: Favorite];
-  remove: [id: string];
-}>();
+  send: [fav: Favorite]
+  remove: [id: string]
+}>()
 </script>
 
 <template>
@@ -25,12 +33,21 @@ defineEmits<{
       <div class="favorite-card__actions">
         <button
             class="icon-btn icon-btn--send"
+            :class="{
+              'icon-btn--sending': state === 'sending',
+              'icon-btn--sent': state === 'sent',
+              'icon-btn--error': state === 'error',
+            }"
             type="button"
-            :disabled="sending"
-            aria-label="Envoyer au device"
+            :disabled="state === 'sending' || state === 'disabled'"
+            :title="state === 'error' ? errorMessage : undefined"
+            :aria-label="state === 'error' ? `Erreur d'envoi : ${errorMessage}` : 'Envoyer au device'"
             @click="$emit('send', favorite)"
         >
-          <SendIcon />
+          <LoaderIcon v-if="state === 'sending'" />
+          <CheckIcon v-else-if="state === 'sent'" />
+          <AlertIcon v-else-if="state === 'error'" />
+          <SendIcon v-else />
         </button>
 
         <button
@@ -127,6 +144,57 @@ defineEmits<{
 .icon-btn--send svg {
   width: 13px;
   height: 13px;
+}
+
+.icon-btn--sending {
+  opacity: 1;
+  color: var(--color-primary, #6aa7ff);
+}
+
+.icon-btn--sending:disabled {
+  opacity: 1;
+}
+
+.icon-btn--sending svg {
+  animation: spin 0.9s linear infinite;
+}
+
+.icon-btn--sent {
+  opacity: 1;
+  color: var(--color-success, #5dd39e);
+}
+
+.icon-btn--sent svg {
+  animation: pop 220ms ease-out;
+}
+
+.icon-btn--error {
+  opacity: 1;
+  color: var(--color-danger, #ef4444);
+  cursor: pointer;
+}
+
+.icon-btn--error svg {
+  animation: shake 380ms ease-in-out;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-3px); }
+  50%      { transform: translateX(3px); }
+  75%      { transform: translateX(-2px); }
 }
 
 .icon-btn--danger:hover:not(:disabled) {
