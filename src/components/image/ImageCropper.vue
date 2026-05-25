@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { extractCrop } from '../../services/divoom/image.ts'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import {
+  clampOffset,
+  clampScale,
+  extractCrop,
+} from '../../services/divoom/image.ts'
 
 const CANVAS_SIZE = 300
+const MAX_SCALE = 20
 
 const props = defineProps<{ source: HTMLImageElement | null }>()
 const emit = defineEmits<{ crop: [imageData: ImageData] }>()
@@ -15,15 +20,21 @@ const scale = ref(1)
 const dragging = ref(false)
 const lastMousePosition = ref({ x: 0, y: 0 })
 
+const minScale = computed(() => {
+  if (!props.source) return 0.1
+  return (
+    CANVAS_SIZE /
+    Math.max(props.source.naturalWidth, props.source.naturalHeight)
+  )
+})
+
 let debounceTimer: number | null = null
 
 const resetState = () => {
   if (!props.source) return
-  const sourceWidth = props.source.naturalWidth
-  const sourceHeight = props.source.naturalHeight
-  scale.value = CANVAS_SIZE / Math.max(sourceWidth, sourceHeight)
-  offsetX.value = (CANVAS_SIZE - sourceWidth * scale.value) / 2
-  offsetY.value = (CANVAS_SIZE - sourceHeight * scale.value) / 2
+  scale.value = minScale.value
+  offsetX.value = (CANVAS_SIZE - props.source.naturalWidth * scale.value) / 2
+  offsetY.value = (CANVAS_SIZE - props.source.naturalHeight * scale.value) / 2
 }
 
 const draw = () => {
@@ -77,9 +88,22 @@ const onMouseDown = (event: MouseEvent) => {
 }
 
 const onMouseMove = (event: MouseEvent) => {
-  if (!dragging.value) return
-  offsetX.value += event.clientX - lastMousePosition.value.x
-  offsetY.value += event.clientY - lastMousePosition.value.y
+  if (!dragging.value || !props.source) return
+
+  const rawOffsetX = offsetX.value + (event.clientX - lastMousePosition.value.x)
+  const rawOffsetY = offsetY.value + (event.clientY - lastMousePosition.value.y)
+
+  offsetX.value = clampOffset(
+    rawOffsetX,
+    props.source.naturalWidth * scale.value,
+    CANVAS_SIZE,
+  )
+  offsetY.value = clampOffset(
+    rawOffsetY,
+    props.source.naturalHeight * scale.value,
+    CANVAS_SIZE,
+  )
+
   lastMousePosition.value = { x: event.clientX, y: event.clientY }
   draw()
   emitCrop()
@@ -95,15 +119,33 @@ const onWheel = (event: WheelEvent) => {
   const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1
 
   const rect = canvasRef.value?.getBoundingClientRect()
-  if (!rect) return
+  if (!rect || !props.source) return
+
+  const newScale = clampScale(
+    scale.value * zoomFactor,
+    minScale.value,
+    MAX_SCALE,
+  )
+  if (newScale === scale.value) return
 
   const mouseX = event.clientX - rect.left
   const mouseY = event.clientY - rect.top
 
-  const newScale = scale.value * zoomFactor
-  offsetX.value = mouseX - (mouseX - offsetX.value) * (newScale / scale.value)
-  offsetY.value = mouseY - (mouseY - offsetY.value) * (newScale / scale.value)
+  const rawOffsetX =
+    mouseX - (mouseX - offsetX.value) * (newScale / scale.value)
+  const rawOffsetY =
+    mouseY - (mouseY - offsetY.value) * (newScale / scale.value)
 
+  offsetX.value = clampOffset(
+    rawOffsetX,
+    props.source.naturalWidth * newScale,
+    CANVAS_SIZE,
+  )
+  offsetY.value = clampOffset(
+    rawOffsetY,
+    props.source.naturalHeight * newScale,
+    CANVAS_SIZE,
+  )
   scale.value = newScale
 
   draw()

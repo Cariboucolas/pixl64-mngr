@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from 'vitest'
 import {
+  clampOffset,
+  clampScale,
   computeCropParams,
   encodeFrame,
   extractCrop,
@@ -26,6 +28,50 @@ function createTestImageData(
   }
   return { data, width, height, colorSpace: 'srgb' } as ImageData
 }
+
+describe('clampScale', () => {
+  it('returns scale unchanged when within bounds', () => {
+    expect(clampScale(1.0, 0.1, 20)).toBe(1.0)
+  })
+
+  it('clamps to min when below', () => {
+    expect(clampScale(0.05, 0.1, 20)).toBe(0.1)
+  })
+
+  it('clamps to max when above', () => {
+    expect(clampScale(50, 0.1, 20)).toBe(20)
+  })
+
+  it('returns min when scale equals min', () => {
+    expect(clampScale(0.1, 0.1, 20)).toBe(0.1)
+  })
+
+  it('returns max when scale equals max', () => {
+    expect(clampScale(20, 0.1, 20)).toBe(20)
+  })
+})
+
+describe('clampOffset', () => {
+  it('centers when image is smaller than canvas', () => {
+    // image 100px dans canvas 300px → centré, offset = 100
+    expect(clampOffset(50, 100, 300)).toBe(100)
+    expect(clampOffset(-200, 100, 300)).toBe(100)
+  })
+
+  it('clamps to right edge when image is larger and offset too negative', () => {
+    // image 500px dans canvas 300px → min offset = -200 (image alignée à droite)
+    expect(clampOffset(-1000, 500, 300)).toBe(-200)
+  })
+
+  it('clamps to left edge when image is larger and offset positive', () => {
+    // image 500px dans canvas 300px → max offset = 0 (image alignée à gauche)
+    expect(clampOffset(50, 500, 300)).toBe(0)
+  })
+
+  it('preserves offset when image is larger and offset within bounds', () => {
+    expect(clampOffset(-100, 500, 300)).toBe(-100)
+  })
+})
 
 describe('validateImageResponse', () => {
   it('throws on non-ok response', async () => {

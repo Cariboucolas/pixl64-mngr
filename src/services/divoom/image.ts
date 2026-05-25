@@ -117,6 +117,22 @@ export const resizeToCanvas = (
   return ctx.getImageData(0, 0, size, size)
 }
 
+export const clampScale = (scale: number, min: number, max: number): number =>
+  Math.min(Math.max(scale, min), max)
+
+export const clampOffset = (
+  offset: number,
+  scaledDimension: number,
+  canvasDimension: number,
+): number => {
+  if (scaledDimension <= canvasDimension) {
+    return (canvasDimension - scaledDimension) / 2
+  }
+  const minOffset = canvasDimension - scaledDimension
+  const maxOffset = 0
+  return Math.min(Math.max(offset, minOffset), maxOffset)
+}
+
 export interface CropDrawParams {
   readX: number
   readY: number
