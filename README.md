@@ -51,17 +51,13 @@ Pre-built binaries are available on the [Releases page](https://github.com/Carib
 
 ## Screenshots
 
-<!-- TODO: ajouter au moins 3 screenshots dans docs/screenshots/ et décommenter -->
-
-<!--
 | Connection | Dashboard | Send image |
 |---|---|---|
 | ![Connection](docs/screenshots/connection.png) | ![Dashboard](docs/screenshots/dashboard.png) | ![Send](docs/screenshots/send-image.png) |
 
-| Cropper | Favorites |
-|---|---|
-| ![Cropper](docs/screenshots/cropper.png) | ![Favorites](docs/screenshots/favorites.png) |
--->
+| Cropper | Favorites | Search |
+|---|---|---|
+| ![Cropper](docs/screenshots/cropper.png) | ![Favorites](docs/screenshots/favorites.png) | ![Search](docs/screenshots/research.png) |
 
 ## Tech stack
 
