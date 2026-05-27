@@ -51,9 +51,9 @@ Pre-built binaries are available on the [Releases page](https://github.com/Carib
 
 ## Screenshots
 
-| Discovery | Connection | Dashboard |
+| Connection | Dashboard | Controls |
 |---|---|---|
-| ![Discovery](docs/screenshots/research.png) | ![Connection](docs/screenshots/connection.png) | ![Dashboard](docs/screenshots/dashboard.png) |
+| ![Connection](docs/screenshots/connection.png) | ![Dashboard](docs/screenshots/dashboard.png) | ![Controls](docs/screenshots/control.png) |
 
 | Send image | Cropper | Favorites |
 |---|---|---|
