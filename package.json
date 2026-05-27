@@ -35,5 +35,13 @@
     "vite-svg-loader": "^5.1.1",
     "vitest": "^4.1.0",
     "vue-tsc": "^2.2.12"
+  },
+  "pnpm": {
+    "overrides": {
+      "picomatch": ">=4.0.4",
+      "brace-expansion": ">=2.0.3",
+      "yaml": ">=2.8.3",
+      "postcss": ">=8.5.10"
+    }
   }
 }
