@@ -10,6 +10,7 @@ import {
   MAX_IMAGE_DIMENSION,
   validateImageDimensions,
   validateImageResponse,
+  validateImageUrl,
 } from '../../src/services/divoom/image'
 
 function createTestImageData(
@@ -350,5 +351,66 @@ describe('extractCrop', () => {
     expect(args[8]).toBe(expected.drawHeight)
 
     vi.restoreAllMocks()
+  })
+})
+
+describe('validateImageUrl', () => {
+  it('returns a URL object for valid https URL', () => {
+    const result = validateImageUrl('https://example.com/cat.png')
+
+    expect(result).toBeInstanceOf(URL)
+    expect(result.protocol).toBe('https:')
+  })
+
+  it.each(['', 'not a url', 'http//missing-colon'])(
+    'throws on malformed URL: %s',
+    (url) => {
+      expect(() => validateImageUrl(url)).toThrow(/invalide|malform/i)
+    },
+  )
+
+  it.each([
+    'http://example.com/cat.png',
+    'file:///etc/passwd',
+    'javascript:alert(1)',
+    'data:image/png;base64,abc',
+    'ftp://example.com/',
+  ])('rejects non-https protocol: %s', (url) => {
+    expect(() => validateImageUrl(url)).toThrow(/https/i)
+  })
+
+  it.each(['https://localhost/', 'https://127.0.0.1/', 'https://[::1]/'])(
+    'rejects loopback host: %s',
+    (url) => {
+      expect(() => validateImageUrl(url)).toThrow(/loopback|local/i)
+    },
+  )
+
+  it.each([
+    'https://10.0.0.1/',
+    'https://192.168.1.1/',
+    'https://172.16.0.1/',
+  ])('rejects RFC1918 private IP: %s', (url) => {
+    expect(() => validateImageUrl(url)).toThrow(/priv/i)
+  })
+
+  it('rejects IPv4 link-local (169.254.x.x)', () => {
+    expect(() => validateImageUrl('https://169.254.0.1/')).toThrow(/link-local/i)
+  })
+
+  it('rejects .local mDNS hostnames', () => {
+    expect(() => validateImageUrl('https://mydevice.local/')).toThrow(/local/i)
+  })
+
+  it('rejects IPv4 written as decimal integer', () => {
+    expect(() => validateImageUrl('https://2130706433/')).toThrow(
+      /décimal|decimal/i,
+    )
+  })
+
+  it('rejects IPv4-mapped IPv6', () => {
+    expect(() => validateImageUrl('https://[::ffff:127.0.0.1]/')).toThrow(
+      /mapped/i,
+    )
   })
 })
