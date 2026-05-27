@@ -9,6 +9,7 @@ import {
   sendStaticImage,
   validateImageDimensions,
   validateImageResponse,
+  validateImageUrl,
 } from '../services/divoom/image'
 import { useDeviceStore } from '../stores/device'
 import { useFavoritesStore } from '../stores/favorites.ts'
@@ -36,15 +37,16 @@ const loadImageFromBlob = (objectUrl: string): Promise<HTMLImageElement> => {
 }
 
 const loadFromUrl = async () => {
-  const url = imageUrl.value.trim()
-  if (!url) return
+  const rawUrl = imageUrl.value.trim()
+  if (!rawUrl) return
 
   urlLoading.value = true
   urlError.value = null
 
   let blobUrl: string | null = null
   try {
-    const response = await fetch(url)
+    const safeUrl = validateImageUrl(rawUrl)
+    const response = await fetch(safeUrl.toString())
     const buffer = await validateImageResponse(response)
 
     blobUrl = URL.createObjectURL(new Blob([buffer]))
