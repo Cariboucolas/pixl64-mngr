@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "pixl64-mngr-tmp",
+  "productName": "Pixl64 Mngr",
   "version": "0.1.0",
-  "identifier": "com.cdurcy.pixl64-mngr-tmp",
+  "identifier": "com.cdurcy.pixl64-mngr",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "pixl64-mngr-tmp",
+        "title": "Pixl64 Mngr",
         "width": 800,
         "height": 600
       }

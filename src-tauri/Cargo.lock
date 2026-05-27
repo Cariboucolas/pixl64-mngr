@@ -2736,7 +2736,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "pixl64-mngr-tmp"
+name = "pixl64-mngr"
 version = "0.1.0"
 dependencies = [
  "reqwest 0.12.28",
