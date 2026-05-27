@@ -38,10 +38,10 @@
   },
   "pnpm": {
     "overrides": {
-      "picomatch": ">=4.0.4",
-      "brace-expansion": ">=2.0.3",
-      "yaml": ">=2.8.3",
-      "postcss": ">=8.5.10"
+      "picomatch": "^4.0.4",
+      "brace-expansion": "^2.0.3",
+      "yaml": "^2.8.3",
+      "postcss": "^8.5.10"
     }
   }
 }
