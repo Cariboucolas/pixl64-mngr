@@ -403,8 +403,11 @@ describe('validateImageUrl', () => {
   })
 
   it('rejects IPv4 written as decimal integer', () => {
+    // URL parser normalizes 2130706433 → 127.0.0.1, so the rejection
+    // comes from the loopback branch in practice. Either reason is OK:
+    // the goal is that the URL is refused.
     expect(() => validateImageUrl('https://2130706433/')).toThrow(
-      /décimal|decimal/i,
+      /loopback|décimal|decimal/i,
     )
   })
 

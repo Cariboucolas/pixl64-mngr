@@ -1,9 +1,61 @@
+import ipaddr from 'ipaddr.js'
 import type { DivoomClient } from './client'
 import * as commands from './commands'
 
 export const MAX_FILE_SIZE_MB = 20
 export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 export const MAX_IMAGE_DIMENSION = 10_000
+
+export const validateImageUrl = (rawUrl: string): URL => {
+  let url: URL
+  try {
+    url = new URL(rawUrl)
+  } catch {
+    throw new Error("L'URL est invalide")
+  }
+
+  if (url.protocol !== 'https:') {
+    throw new Error('Seules les URLs https:// sont autorisées')
+  }
+
+  // IPv6 hostnames are bracketed in URLs: [::1] → ::1
+  const hostname = url.hostname.replace(/^\[|\]$/g, '')
+
+  if (hostname === 'localhost') {
+    throw new Error('Hostname local (localhost) interdit')
+  }
+
+  if (hostname.endsWith('.local')) {
+    throw new Error('Hostname mDNS (.local) interdit')
+  }
+
+  // Decimal IPv4 like 2130706433 (= 127.0.0.1) — bypasses dotted-IP checks
+  if (/^\d+$/.test(hostname)) {
+    throw new Error('Notation IPv4 décimale non autorisée')
+  }
+
+  if (ipaddr.isValid(hostname)) {
+    const range = ipaddr.parse(hostname).range()
+
+    if (range === 'loopback') {
+      throw new Error('Adresse loopback non autorisée')
+    }
+    if (range === 'private') {
+      throw new Error('Adresse privée non autorisée')
+    }
+    if (range === 'linkLocal') {
+      throw new Error('Adresse link-local non autorisée')
+    }
+    if (range === 'ipv4Mapped') {
+      throw new Error('IPv4-mapped IPv6 non autorisée')
+    }
+    if (range !== 'unicast') {
+      throw new Error(`Adresse IP réservée non autorisée (${range})`)
+    }
+  }
+
+  return url
+}
 
 export const validateImageResponse = async (
   response: Response,
