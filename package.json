@@ -20,6 +20,7 @@
     "@tauri-apps/plugin-http": "^2.5.7",
     "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-store": "^2.4.2",
+    "ipaddr.js": "^2.4.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.13",
     "vue-router": "^5.0.3"
@@ -30,9 +31,9 @@
     "@vitejs/plugin-vue": "^5.2.1",
     "jsdom": "^29.0.1",
     "typescript": "~5.6.2",
-    "vite": "^6.0.3",
+    "vite": "^6.4.2",
     "vite-svg-loader": "^5.1.1",
     "vitest": "^4.1.0",
-    "vue-tsc": "^2.1.10"
+    "vue-tsc": "^2.2.12"
   }
 }
