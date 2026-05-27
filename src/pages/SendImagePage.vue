@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { fetch } from '@tauri-apps/plugin-http'
+import { invoke } from '@tauri-apps/api/core'
 import { ref } from 'vue'
 import ImageCropper from '../components/image/ImageCropper.vue'
 import ImagePreview from '../components/image/ImagePreview.vue'
@@ -8,11 +8,15 @@ import {
   imageDataToDataUrl,
   sendStaticImage,
   validateImageDimensions,
-  validateImageResponse,
   validateImageUrl,
 } from '../services/divoom/image'
 import { useDeviceStore } from '../stores/device'
 import { useFavoritesStore } from '../stores/favorites.ts'
+
+interface ImageBytes {
+  bytes: number[]
+  mime: string
+}
 
 const deviceStore = useDeviceStore()
 const imageUrl = ref('')
@@ -45,11 +49,13 @@ const loadFromUrl = async () => {
 
   let blobUrl: string | null = null
   try {
-    const safeUrl = validateImageUrl(rawUrl)
-    const response = await fetch(safeUrl.toString())
-    const buffer = await validateImageResponse(response)
+    validateImageUrl(rawUrl)
+    const result = await invoke<ImageBytes>('fetch_image_bytes', {
+      url: rawUrl,
+    })
 
-    blobUrl = URL.createObjectURL(new Blob([buffer]))
+    const blob = new Blob([new Uint8Array(result.bytes)], { type: result.mime })
+    blobUrl = URL.createObjectURL(blob)
     const img = await loadImageFromBlob(blobUrl)
     validateImageDimensions(img)
     onImageLoaded(img)
