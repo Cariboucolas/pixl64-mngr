@@ -109,8 +109,7 @@ fn validate_ipv4(addr: Ipv4Addr) -> Result<(), String> {
 
 fn validate_ipv6(addr: Ipv6Addr) -> Result<(), String> {
     if let Some(v4) = addr.to_ipv4_mapped() {
-        return validate_ipv4(v4)
-            .map_err(|_| "IPv4-mapped IPv6 non autorisée".to_string());
+        return validate_ipv4(v4).map_err(|_| "IPv4-mapped IPv6 non autorisée".to_string());
     }
     if addr.is_loopback() {
         return Err("Adresse loopback non autorisée".to_string());
@@ -153,7 +152,10 @@ mod tests {
             "file:///etc/passwd",
         ] {
             let err = validate_url(url).unwrap_err();
-            assert!(err.contains("https"), "expected https rejection, got: {err}");
+            assert!(
+                err.contains("https"),
+                "expected https rejection, got: {err}"
+            );
         }
     }
 
@@ -172,7 +174,10 @@ mod tests {
             "https://172.16.0.1/",
         ] {
             let err = validate_url(url).unwrap_err();
-            assert!(err.contains("priv"), "expected private rejection for {url}, got: {err}");
+            assert!(
+                err.contains("priv"),
+                "expected private rejection for {url}, got: {err}"
+            );
         }
     }
 

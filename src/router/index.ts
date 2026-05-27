@@ -32,7 +32,7 @@ const router = createRouter({
       meta: { requiresDevice: true },
       name: 'favorites',
       component: () => import('../pages/FavoritesPage.vue'),
-    }
+    },
   ],
 })
 
