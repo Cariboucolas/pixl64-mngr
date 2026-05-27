@@ -2739,6 +2739,7 @@ dependencies = [
 name = "pixl64-mngr-tmp"
 version = "0.1.0"
 dependencies = [
+ "reqwest 0.12.28",
  "serde",
  "serde_json",
  "tauri",
@@ -2746,6 +2747,8 @@ dependencies = [
  "tauri-plugin-http",
  "tauri-plugin-opener",
  "tauri-plugin-store",
+ "tokio",
+ "url",
 ]
 
 [[package]]
