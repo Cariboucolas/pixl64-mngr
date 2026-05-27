@@ -1,0 +1,41 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":dependencyDashboard"
+  ],
+  "schedule": ["before 6am on Monday"],
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["@tauri-apps/**"],
+      "groupName": "tauri packages"
+    },
+    {
+      "matchPackageNames": [
+        "vue",
+        "vue-router",
+        "vue-tsc",
+        "vite",
+        "vitest",
+        "@vitejs/**"
+      ],
+      "groupName": "vue + vite ecosystem"
+    },
+    {
+      "matchManagers": ["cargo"],
+      "groupName": "rust dependencies"
+    },
+    {
+      "matchUpdateTypes": ["pin", "digest"],
+      "automerge": true
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "labels": ["security"]
+  },
+  "rust": {
+    "enabled": true
+  }
+}
