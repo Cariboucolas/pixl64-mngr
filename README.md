@@ -5,7 +5,6 @@
 **Cross-platform desktop app to control your Divoom Pixoo-64 LED panel.**
 
 [![CI](https://github.com/Cariboucolas/pixl64-mngr/actions/workflows/ci.yml/badge.svg)](https://github.com/Cariboucolas/pixl64-mngr/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/Cariboucolas/pixl64-mngr?include_prereleases&sort=semver)](https://github.com/Cariboucolas/pixl64-mngr/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-FFC131?logo=tauri&logoColor=white)](https://tauri.app)
 [![Vue 3](https://img.shields.io/badge/Vue.js-3.5-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org)
