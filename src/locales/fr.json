@@ -1,0 +1,12 @@
+{
+  "common": {
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "error": "Erreur",
+    "loading": "Chargement…",
+    "search": "Rechercher"
+  },
+  "settings": {
+    "language": "Langue"
+  }
+}
