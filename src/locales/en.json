@@ -81,5 +81,32 @@
     "choose": "Choose an image",
     "cropperHint": "Load an image to crop it",
     "noPreview": "No image selected"
+  },
+  "errors": {
+    "url": {
+      "invalid": "Invalid URL",
+      "nonHttps": "Only https:// URLs are allowed",
+      "localhost": "Local hostname (localhost) forbidden",
+      "mdns": "mDNS hostname (.local) forbidden",
+      "decimalIpv4": "Decimal IPv4 notation not allowed",
+      "loopback": "Loopback address not allowed",
+      "private": "Private address not allowed",
+      "linkLocal": "Link-local address not allowed",
+      "ipv4Mapped": "IPv4-mapped IPv6 not allowed",
+      "reservedIp": "Reserved IP address not allowed ({range})"
+    },
+    "http": {
+      "status": "HTTP error! status: {status}",
+      "notImage": "URL does not point to an image",
+      "tooLarge": "Image is too large: {actualMb} MB (maximum: {maxMb} MB)."
+    },
+    "image": {
+      "dimensionTooLarge": "Image exceeds max dimensions of {max}x{max}px",
+      "loadFailed": "Failed to load image"
+    },
+    "discovery": {
+      "httpFailed": "Discovery failed: HTTP {status}",
+      "apiFailed": "Discovery failed: {message}"
+    }
   }
 }

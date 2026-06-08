@@ -81,5 +81,32 @@
     "choose": "Choisir une image",
     "cropperHint": "Chargez une image pour la cadrer",
     "noPreview": "Aucune image sélectionnée"
+  },
+  "errors": {
+    "url": {
+      "invalid": "L'URL est invalide",
+      "nonHttps": "Seules les URLs https:// sont autorisées",
+      "localhost": "Hostname local (localhost) interdit",
+      "mdns": "Hostname mDNS (.local) interdit",
+      "decimalIpv4": "Notation IPv4 décimale non autorisée",
+      "loopback": "Adresse loopback non autorisée",
+      "private": "Adresse privée non autorisée",
+      "linkLocal": "Adresse link-local non autorisée",
+      "ipv4Mapped": "IPv4-mapped IPv6 non autorisée",
+      "reservedIp": "Adresse IP réservée non autorisée ({range})"
+    },
+    "http": {
+      "status": "Erreur HTTP ! status : {status}",
+      "notImage": "L'URL ne pointe pas vers une image",
+      "tooLarge": "L'image est trop volumineuse : {actualMb} MB (maximum : {maxMb} MB)."
+    },
+    "image": {
+      "dimensionTooLarge": "L'image dépasse les dimensions maximales de {max}x{max}px",
+      "loadFailed": "Impossible de charger l'image"
+    },
+    "discovery": {
+      "httpFailed": "Échec de découverte : HTTP {status}",
+      "apiFailed": "Échec de découverte : {message}"
+    }
   }
 }
