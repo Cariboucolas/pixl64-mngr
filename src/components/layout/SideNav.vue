@@ -1,19 +1,24 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import HomeIcon from '../../assets/icons/home.svg?component'
+import ImageIcon from '../../assets/icons/image.svg?component'
+import SlidersIcon from '../../assets/icons/sliders.svg?component'
+import StarIcon from '../../assets/icons/star.svg?component'
 import { switchLocale } from '../../i18n'
 import type { SupportedLocale } from '../../i18n/locale'
-import { useDeviceStore } from '../../stores/device.ts'
 
 const { t, locale } = useI18n()
-const deviceStore = useDeviceStore()
-const router = useRouter()
-const onDisconnect = () => {
-  deviceStore.disconnect()
-  router.push('/connect')
+
+const FLAGS: Record<SupportedLocale, string> = {
+  en: '🇬🇧',
+  fr: '🇫🇷',
 }
-const onLocaleChange = (next: SupportedLocale) => {
-  switchLocale(next)
+
+const otherLocale = (current: string): SupportedLocale =>
+  current === 'fr' ? 'en' : 'fr'
+
+const onLocaleToggle = () => {
+  switchLocale(otherLocale(locale.value))
 }
 </script>
 
@@ -25,36 +30,42 @@ const onLocaleChange = (next: SupportedLocale) => {
       </div>
       <ul class="side-nav-links">
         <li>
-          <RouterLink to="/" exact-active-class="active">{{ t('nav.dashboard') }}</RouterLink>
+          <RouterLink to="/" exact-active-class="active">
+            <HomeIcon class="nav-icon" aria-hidden="true" />
+            <span>{{ t('nav.dashboard') }}</span>
+          </RouterLink>
         </li>
         <li>
-          <RouterLink to="/controls" active-class="active">{{ t('nav.controls') }}</RouterLink>
+          <RouterLink to="/controls" active-class="active">
+            <SlidersIcon class="nav-icon" aria-hidden="true" />
+            <span>{{ t('nav.controls') }}</span>
+          </RouterLink>
         </li>
         <li>
-          <RouterLink to="/send" active-class="active">{{ t('nav.sendImage') }}</RouterLink>
+          <RouterLink to="/send" active-class="active">
+            <ImageIcon class="nav-icon" aria-hidden="true" />
+            <span>{{ t('nav.sendImage') }}</span>
+          </RouterLink>
         </li>
         <li>
-          <RouterLink to="/favorites" active-class="active">{{ t('nav.favorites') }}</RouterLink>
+          <RouterLink to="/favorites" active-class="active">
+            <StarIcon class="nav-icon" aria-hidden="true" />
+            <span>{{ t('nav.favorites') }}</span>
+          </RouterLink>
         </li>
       </ul>
-      </div>
-    <ul class="side-nav-footer">
-      <li class="locale-switcher">
-        <button
-          :class="{ active: locale === 'en' }"
-          aria-label="English"
-          @click="onLocaleChange('en')"
-        >EN</button>
-        <button
-          :class="{ active: locale === 'fr' }"
-          aria-label="Français"
-          @click="onLocaleChange('fr')"
-        >FR</button>
-      </li>
-      <li>
-        <button class="primary" @click="onDisconnect">{{ t('nav.disconnect') }}</button>
-      </li>
-    </ul>
+    </div>
+    <div class="side-nav-footer">
+      <button
+        class="locale-toggle"
+        type="button"
+        :aria-label="t('settings.changeLanguage')"
+        :title="t('settings.changeLanguage')"
+        @click="onLocaleToggle"
+      >
+        {{ FLAGS[locale as SupportedLocale] }}
+      </button>
+    </div>
   </nav>
 </template>
 
@@ -70,7 +81,7 @@ const onLocaleChange = (next: SupportedLocale) => {
 }
 
 .side-nav-header {
-  padding: 1rem;
+  padding: 1.25rem 1rem 1rem;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -78,53 +89,24 @@ const onLocaleChange = (next: SupportedLocale) => {
   margin: 0;
   font-size: 1.2rem;
   color: var(--color-text);
-}
-
-.side-nav-footer {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  align-items: stretch;
-  padding: 1rem;
-  margin: 0;
-}
-
-.locale-switcher {
-  display: flex;
-  justify-content: center;
-  gap: 0.25rem;
-}
-
-.locale-switcher button {
-  padding: 0.25rem 0.5rem;
-  background: none;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  color: var(--color-text-secondary);
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: background-color 0.15s, color 0.15s;
-}
-
-.locale-switcher button.active {
-  background-color: var(--color-active);
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  letter-spacing: 0.02em;
 }
 
 .side-nav-links {
   list-style: none;
-  padding: 0;
+  padding: 0.5rem 0;
   margin: 0;
 }
 
 .side-nav-links li a {
-  display: block;
-  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
   color: var(--color-text-secondary);
   text-decoration: none;
   transition: background-color 0.15s, color 0.15s;
+  border-left: 3px solid transparent;
 }
 
 .side-nav-links li a:hover {
@@ -136,5 +118,39 @@ const onLocaleChange = (next: SupportedLocale) => {
   background-color: var(--color-active);
   color: var(--color-primary);
   font-weight: 600;
+  border-left-color: var(--color-primary);
+}
+
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.side-nav-footer {
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.locale-toggle {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s, transform 0.15s;
+}
+
+.locale-toggle:hover {
+  background-color: var(--color-hover);
+  transform: translateY(-1px);
+}
+
+.locale-toggle:active {
+  transform: translateY(0);
 }
 </style>
