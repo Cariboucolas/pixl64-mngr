@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   modelValue: number
@@ -33,7 +36,7 @@ const onInput = (event: Event) => {
 <template>
   <div class="brightness-slider">
     <label>
-      Luminosité
+      {{ t('controls.brightness') }}
       <span class="value">{{ localValue }}%</span>
     </label>
     <input

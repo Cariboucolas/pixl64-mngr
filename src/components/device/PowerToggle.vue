@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps<{
   on: boolean
   disabled: boolean
@@ -11,13 +15,13 @@ defineEmits<{
 
 <template>
   <div class="power-toggle">
-    <label>Écran</label>
+    <label>{{ t('controls.power') }}</label>
     <button
       :class="on ? 'on' : 'off'"
       :disabled="disabled"
       @click="$emit('toggle')"
     >
-      {{ on ? 'Allumé' : 'Éteint' }}
+      {{ on ? t('controls.powerOn') : t('controls.powerOff') }}
     </button>
   </div>
 </template>

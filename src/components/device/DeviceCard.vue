@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import type { DivoomDevice } from '../../services/divoom/types'
+
+const { t } = useI18n()
 
 defineProps<{
   device: DivoomDevice
@@ -18,7 +21,7 @@ defineEmits<{
       <span class="device-ip">{{ device.DevicePrivateIP }}</span>
     </div>
     <div v-if="status === 'connected'" class="current-device">
-      <span>Connecté</span>
+      <span>{{ t('common.connected') }}</span>
     </div>
     <button
       v-else
@@ -26,7 +29,7 @@ defineEmits<{
       :disabled="status === 'connecting'"
       @click="$emit('connect', device.DevicePrivateIP)"
     >
-      {{ status === 'connecting' ? 'Connexion...' : 'Connecter' }}
+      {{ status === 'connecting' ? t('common.connecting') : t('common.connect') }}
     </button>
   </div>
 </template>

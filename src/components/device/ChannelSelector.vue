@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps<{
   modelValue: number
   disabled: boolean
@@ -19,7 +23,7 @@ const channels = [
 
 <template>
   <div class="channel-selector">
-    <label>Canal</label>
+    <label>{{ t('controls.channel') }}</label>
     <div class="channel-buttons">
       <button
         v-for="ch in channels"
