@@ -1,24 +1,25 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useDeviceStore } from '../stores/device'
 
+const { t } = useI18n()
 const router = useRouter()
 const deviceStore = useDeviceStore()
 </script>
 
 <template>
   <div class="page">
-    <h1>Dashboard</h1>
+    <h1>{{ t('dashboard.title') }}</h1>
 
     <div class="status-card connected">
       <span class="dot"></span>
       <span>
-        Connecté à <strong>{{ deviceStore.ip }}</strong>
-        — Luminosité : {{ deviceStore.brightness }}%
+        {{ t('dashboard.statusLine', { ip: deviceStore.ip, brightness: deviceStore.brightness }) }}
       </span>
     </div>
     <button class="primary" @click="router.push('/connect')">
-      Changer d'appareil
+      {{ t('dashboard.changeDevice') }}
     </button>
   </div>
 </template>

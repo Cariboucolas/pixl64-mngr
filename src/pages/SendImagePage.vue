@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { invoke } from '@tauri-apps/api/core'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import ImageCropper from '../components/image/ImageCropper.vue'
 import ImagePreview from '../components/image/ImagePreview.vue'
 import ImageUploader from '../components/image/ImageUploader.vue'
@@ -18,6 +19,7 @@ interface ImageBytes {
   mime: string
 }
 
+const { t } = useI18n()
 const deviceStore = useDeviceStore()
 const imageUrl = ref('')
 const croppedData = ref<ImageData | null>(null)
@@ -34,8 +36,7 @@ const loadImageFromBlob = (objectUrl: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.onload = () => resolve(img)
-    img.onerror = () =>
-      reject(new Error("Le fichier n'est pas une image valide"))
+    img.onerror = () => reject(new Error(t('send.invalidImage')))
     img.src = objectUrl
   })
 }
@@ -60,8 +61,7 @@ const loadFromUrl = async () => {
     validateImageDimensions(img)
     onImageLoaded(img)
   } catch (e) {
-    urlError.value =
-      e instanceof Error ? e.message : "Erreur lors du chargement de l'image"
+    urlError.value = e instanceof Error ? e.message : t('send.errorLoading')
   } finally {
     if (blobUrl) URL.revokeObjectURL(blobUrl)
     urlLoading.value = false
@@ -83,7 +83,7 @@ const saveAsFavorite = async () => {
   const dataUrl = imageDataToDataUrl(croppedData.value)
   await favoritesStore.add(dataUrl, favoriteLabel.value.trim() || undefined)
   showFavoriteForm.value = false
-  status.value = 'Ajouté aux favoris !'
+  status.value = t('send.addedToFavorites')
 }
 
 const dismissFavoriteForm = () => {
@@ -99,11 +99,11 @@ const sendToDevice = async () => {
 
   try {
     await sendStaticImage(client, croppedData.value)
-    status.value = 'Image envoyée !'
+    status.value = t('send.sent')
     showFavoriteForm.value = true
     favoriteLabel.value = ''
   } catch (e) {
-    status.value = e instanceof Error ? e.message : "Erreur lors de l'envoi"
+    status.value = e instanceof Error ? e.message : t('send.errorSending')
   } finally {
     sending.value = false
   }
@@ -112,25 +112,25 @@ const sendToDevice = async () => {
 
 <template>
   <div class="page">
-    <h1>Envoyer une image</h1>
+    <h1>{{ t('send.title') }}</h1>
 
     <div class="send-layout">
       <ImageUploader @load="onImageLoaded" />
 
       <div class="url-form">
-        <span class="separator">ou</span>
+        <span class="separator">{{ t('send.or') }}</span>
         <form @submit.prevent="loadFromUrl" class="url-input-group">
           <input
             v-model="imageUrl"
             type="url"
-            placeholder="https://example.com/image.png"
+            :placeholder="t('send.urlPlaceholder')"
             :disabled="urlLoading"
           />
           <button
               class="primary"
               type="submit"
               :disabled="urlLoading || !imageUrl.trim()">
-            {{ urlLoading ? 'Chargement...' : 'Charger' }}
+            {{ urlLoading ? t('common.loading') : t('send.load') }}
           </button>
           </form>
         <p v-if="urlError" class="error">{{ urlError }}</p>
@@ -146,35 +146,35 @@ const sendToDevice = async () => {
         :disabled="!croppedData || !deviceStore.isReady || sending"
         @click="sendToDevice"
       >
-        {{ sending ? 'Envoi...' : 'Envoyer au Pixoo-64' }}
+        {{ sending ? t('send.sending') : t('send.sendToPixoo') }}
       </button>
 
       <div v-if="showFavoriteForm" class="favorite-form">
-        <p class="success">Image envoyée !</p>
+        <p class="success">{{ t('send.sent') }}</p>
         <label class="favorite-label">
-          Nom du favori (optionnel)
+          {{ t('send.favoriteLabelTitle') }}
           <input
               v-model="favoriteLabel"
               type="text"
-              placeholder="Ex: Logo Halo"
+              :placeholder="t('send.favoriteLabelPlaceholder')"
           />
         </label>
         <div class="favorite-actions">
           <button class="primary" @click="saveAsFavorite">
-            Sauvegarder en favori
+            {{ t('send.saveAsFavorite') }}
           </button>
           <button @click="dismissFavoriteForm">
-            Non merci
+            {{ t('send.noThanks') }}
           </button>
         </div>
       </div>
 
-      <p v-else-if="status" :class="status.includes('Erreur') ? 'error' : 'success'">
+      <p v-else-if="status" :class="status === t('send.errorSending') || status === t('send.errorLoading') ? 'error' : 'success'">
         {{ status }}
       </p>
 
       <p v-if="!deviceStore.connected" class="hint">
-        Connectez-vous d'abord à un appareil.
+        {{ t('controls.needConnection') }}
       </p>
     </div>
   </div>

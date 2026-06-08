@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Grid3x3Icon from '../assets/icons/grid-3x3.svg?component'
 import Grid5x5Icon from '../assets/icons/grid-5x5.svg?component'
 import ConfirmDialog from '../components/common/ConfirmDialog.vue'
@@ -12,6 +13,8 @@ import {
 } from '../services/divoom/image.ts'
 import { useDeviceStore } from '../stores/device.ts'
 import { type Favorite, useFavoritesStore } from '../stores/favorites.ts'
+
+const { t } = useI18n()
 
 const SENT_FLASH_DURATION_MS = 2000
 const ERROR_FLASH_DURATION_MS = 5000
@@ -101,7 +104,7 @@ const sendToDevice = async (fav: Favorite) => {
     await sendStaticImage(client, imageData)
     flashSent(fav.id)
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Erreur lors de l'envoi"
+    const message = e instanceof Error ? e.message : t('send.errorSending')
     flashError(fav.id, message)
   } finally {
     sendingId.value = null
@@ -120,15 +123,15 @@ onUnmounted(() => {
 
 <template>
   <div class="page">
-    <h1>Favoris</h1>
+    <h1>{{ t('favorites.title') }}</h1>
 
     <div class="toolbar">
-      <input v-model="query" type="text" placeholder="Rechercher..." />
+      <input v-model="query" type="text" :placeholder="t('favorites.searchPlaceholder')" />
       <div class="view-toggle">
-        <button :class="{ active: columns === 3 }" @click="columns = 3" aria-label="Grille 3 colonnes">
+        <button :class="{ active: columns === 3 }" @click="columns = 3" :aria-label="t('favorites.grid3Aria')">
           <Grid3x3Icon />
         </button>
-        <button :class="{ active: columns === 5 }" @click="columns = 5" aria-label="Grille 5 colonnes">
+        <button :class="{ active: columns === 5 }" @click="columns = 5" :aria-label="t('favorites.grid5Aria')">
           <Grid5x5Icon />
         </button>
       </div>
@@ -145,17 +148,17 @@ onUnmounted(() => {
       />
     </div>
     <p v-if="favoritesStore.loaded && !filteredItems.length">
-      {{ query ? 'Aucun résultat' : 'Aucun favori' }}
+      {{ query ? t('favorites.noResults') : t('favorites.empty') }}
     </p>
 
     <ConfirmDialog
         :open="pendingDeletion !== null"
-        title="Supprimer ce favori ?"
+        :title="t('favorites.deleteConfirmTitle')"
         :message="pendingDeletion?.label
-          ? `« ${pendingDeletion.label} » sera supprimé définitivement.`
-          : 'Ce favori sera supprimé définitivement.'"
-        confirm-label="Supprimer"
-        cancel-label="Annuler"
+          ? t('favorites.deleteConfirmLabelled', { label: pendingDeletion.label })
+          : t('favorites.deleteConfirmUnlabelled')"
+        :confirm-label="t('common.delete')"
+        :cancel-label="t('common.cancel')"
         destructive
         @confirm="confirmRemove"
         @cancel="cancelRemove"

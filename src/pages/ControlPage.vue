@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import BrightnessSlider from '../components/device/BrightnessSlider.vue'
 import ChannelSelector from '../components/device/ChannelSelector.vue'
 import PowerToggle from '../components/device/PowerToggle.vue'
 import { useDeviceStore } from '../stores/device'
 
+const { t } = useI18n()
 const deviceStore = useDeviceStore()
 
 const onBrightnessChange = async (value: number) => {
@@ -33,10 +35,10 @@ const onTogglePower = async () => {
 
 <template>
   <div class="page">
-    <h1>Contrôles</h1>
+    <h1>{{ t('controls.title') }}</h1>
 
     <p v-if="!deviceStore.connected" class="hint">
-      Connectez-vous d'abord à un appareil.
+      {{ t('controls.needConnection') }}
     </p>
 
     <div v-else class="controls-grid">

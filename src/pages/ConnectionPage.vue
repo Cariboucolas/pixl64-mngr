@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import DeviceCard from '../components/device/DeviceCard.vue'
 import type { DivoomDevice } from '../services/divoom/types.ts'
 import { useDeviceStore } from '../stores/device'
 import { useSettingsStore } from '../stores/settings'
 
+const { t } = useI18n()
 const deviceStore = useDeviceStore()
 const settingsStore = useSettingsStore()
 const router = useRouter()
@@ -19,7 +21,8 @@ const handleConnect = async (ip: string) => {
     settingsStore.lastDeviceIp = ip
     await router.push('/')
   } catch (e) {
-    manualError.value = e instanceof Error ? e.message : 'Erreur de connexion'
+    manualError.value =
+      e instanceof Error ? e.message : t('connection.errorConnect')
   }
 }
 
@@ -50,15 +53,15 @@ const getDeviceStatus = (device: DivoomDevice) => {
 
 <template>
   <div class="page">
-    <h1>Connexion</h1>
+    <h1>{{ t('connection.title') }}</h1>
 
     <section class="section">
-      <h2>IP manuelle</h2>
+      <h2>{{ t('connection.manualIp') }}</h2>
       <form class="manual-form" @submit.prevent="handleManualConnect">
         <input
           v-model="manualIp"
           type="text"
-          placeholder="192.168.1.xxx"
+          :placeholder="t('connection.ipPlaceholder')"
           :disabled="deviceStore.connecting"
         />
         <button
@@ -66,7 +69,7 @@ const getDeviceStatus = (device: DivoomDevice) => {
           type="submit"
           :disabled="deviceStore.connecting || !manualIp.trim()"
         >
-          {{ deviceStore.connecting ? 'Connexion...' : 'Connecter' }}
+          {{ deviceStore.connecting ? t('common.connecting') : t('common.connect') }}
         </button>
       </form>
       <p v-if="manualError" class="error">{{ manualError }}</p>
@@ -74,13 +77,13 @@ const getDeviceStatus = (device: DivoomDevice) => {
 
     <section class="section">
       <div class="section-header">
-        <h2>Appareils détectés</h2>
+        <h2>{{ t('connection.discoveredDevices') }}</h2>
         <button
           class="primary"
           :disabled="deviceStore.discovering"
           @click="deviceStore.discover()"
         >
-          {{ deviceStore.discovering ? 'Recherche...' : 'Rechercher' }}
+          {{ deviceStore.discovering ? t('connection.discovering') : t('connection.discover') }}
         </button>
       </div>
 
@@ -96,7 +99,7 @@ const getDeviceStatus = (device: DivoomDevice) => {
         />
       </div>
       <p v-else class="hint">
-        Cliquez sur "Rechercher" pour détecter les appareils sur le réseau local.
+        {{ t('connection.discoverHint') }}
       </p>
     </section>
   </div>
