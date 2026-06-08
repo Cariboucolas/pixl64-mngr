@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { useDeviceStore } from '../../stores/device'
 
+const { t } = useI18n()
 const deviceStore = useDeviceStore()
 </script>
 
@@ -11,9 +13,9 @@ const deviceStore = useDeviceStore()
       :class="deviceStore.connected ? 'connected' : 'disconnected'"
     ></span>
     <span v-if="deviceStore.connected">
-      Connecté — {{ deviceStore.ip }}
+      {{ t('status.connectedTo', { ip: deviceStore.ip }) }}
     </span>
-    <span v-else>Non connecté</span>
+    <span v-else>{{ t('status.notConnected') }}</span>
   </div>
 </template>
 
