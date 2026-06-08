@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import ImageCropper from '../components/image/ImageCropper.vue'
 import ImagePreview from '../components/image/ImagePreview.vue'
 import ImageUploader from '../components/image/ImageUploader.vue'
+import { fetchImageErrorMessage } from '../services/divoom/fetchImageError'
 import {
   imageDataToDataUrl,
   sendStaticImage,
@@ -61,7 +62,7 @@ const loadFromUrl = async () => {
     validateImageDimensions(img)
     onImageLoaded(img)
   } catch (e) {
-    urlError.value = e instanceof Error ? e.message : t('send.errorLoading')
+    urlError.value = fetchImageErrorMessage(e)
   } finally {
     if (blobUrl) URL.revokeObjectURL(blobUrl)
     urlLoading.value = false
