@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const emit = defineEmits<{
   load: [image: HTMLImageElement]
@@ -20,7 +23,7 @@ const onFileChange = (event: Event) => {
 <template>
   <div class="image-uploader">
     <button class="primary" @click="fileInput?.click()">
-      Choisir une image
+      {{ t('image.choose') }}
     </button>
     <input
       ref="fileInput"

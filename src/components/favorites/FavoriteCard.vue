@@ -3,12 +3,15 @@ export type CardState = 'idle' | 'sending' | 'sent' | 'error' | 'disabled'
 </script>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import AlertIcon from '../../assets/icons/alert.svg?component'
 import CheckIcon from '../../assets/icons/check.svg?component'
 import LoaderIcon from '../../assets/icons/loader.svg?component'
 import SendIcon from '../../assets/icons/send.svg?component'
 import TrashIcon from '../../assets/icons/trash.svg?component'
 import type { Favorite } from '../../stores/favorites.ts'
+
+const { t } = useI18n()
 
 defineProps<{
   favorite: Favorite
@@ -41,7 +44,7 @@ defineEmits<{
             type="button"
             :disabled="state === 'sending' || state === 'disabled'"
             :title="state === 'error' ? errorMessage : undefined"
-            :aria-label="state === 'error' ? `Erreur d'envoi : ${errorMessage}` : 'Envoyer au device'"
+            :aria-label="state === 'error' ? t('favorites.sendErrorAriaLabel', { message: errorMessage ?? '' }) : t('favorites.sendAriaLabel')"
             @click="$emit('send', favorite)"
         >
           <LoaderIcon v-if="state === 'sending'" />
@@ -53,7 +56,7 @@ defineEmits<{
         <button
             class="icon-btn icon-btn--danger"
             type="button"
-            aria-label="Supprimer le favori"
+            :aria-label="t('favorites.removeAriaLabel')"
             @click="$emit('remove', favorite.id)"
         >
           <TrashIcon />

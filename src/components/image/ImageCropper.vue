@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   clampOffset,
   clampScale,
   extractCrop,
 } from '../../services/divoom/image.ts'
+
+const { t } = useI18n()
 
 const CANVAS_SIZE = 300
 const MAX_SCALE = 20
@@ -174,7 +177,7 @@ onMounted(() => {
 <template>
   <div class="image-cropper">
     <canvas ref="canvasRef" :width="CANVAS_SIZE" :height="CANVAS_SIZE" @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseup="onMouseUp" @mouseleave="onMouseUp" @wheel.prevent="onWheel" />
-    <p v-if="!source" class="placeholder">Chargez une image pour la cadrer</p>
+    <p v-if="!source" class="placeholder">{{ t('image.cropperHint') }}</p>
   </div>
 
 </template>

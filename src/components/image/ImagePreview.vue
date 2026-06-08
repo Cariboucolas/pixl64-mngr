@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   imageData: ImageData | null
@@ -54,7 +57,7 @@ onMounted(draw)
   <div class="image-preview">
     <canvas ref="canvasRef" v-show="imageData"></canvas>
     <div v-if="!imageData" class="placeholder">
-      Aucune image sélectionnée
+      {{ t('image.noPreview') }}
     </div>
   </div>
 </template>
