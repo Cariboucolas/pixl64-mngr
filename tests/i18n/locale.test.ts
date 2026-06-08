@@ -18,29 +18,30 @@ const mockNavigatorLanguage = (value: string | undefined): void => {
 }
 
 describe('detectOsLocale', () => {
-  it.each(['fr', 'fr-FR', 'FR-CA', 'fr-be'])(
-    'returns fr for OS locale: %s',
-    (lang) => {
-      mockNavigatorLanguage(lang)
-      expect(detectOsLocale()).toBe('fr')
-    },
-  )
+  it.each([
+    'fr',
+    'fr-FR',
+    'FR-CA',
+    'fr-be',
+  ])('returns fr for OS locale: %s', (lang) => {
+    mockNavigatorLanguage(lang)
+    expect(detectOsLocale()).toBe('fr')
+  })
 
-  it.each(['en-US', 'en-GB', 'EN'])(
-    'returns en for OS locale: %s',
-    (lang) => {
-      mockNavigatorLanguage(lang)
-      expect(detectOsLocale()).toBe('en')
-    },
-  )
+  it.each(['en-US', 'en-GB', 'EN'])('returns en for OS locale: %s', (lang) => {
+    mockNavigatorLanguage(lang)
+    expect(detectOsLocale()).toBe('en')
+  })
 
-  it.each(['de-DE', 'ja-JP', 'es-ES', ''])(
-    'falls back to default for unsupported locale: %s',
-    (lang) => {
-      mockNavigatorLanguage(lang)
-      expect(detectOsLocale()).toBe(DEFAULT_LOCALE)
-    },
-  )
+  it.each([
+    'de-DE',
+    'ja-JP',
+    'es-ES',
+    '',
+  ])('falls back to default for unsupported locale: %s', (lang) => {
+    mockNavigatorLanguage(lang)
+    expect(detectOsLocale()).toBe(DEFAULT_LOCALE)
+  })
 
   it('falls back to default when navigator.language is undefined', () => {
     mockNavigatorLanguage(undefined)

@@ -2,11 +2,84 @@
   "common": {
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "error": "Error",
+    "connect": "Connect",
+    "connecting": "Connecting…",
+    "connected": "Connected",
+    "delete": "Delete",
     "loading": "Loading…",
-    "search": "Search"
+    "search": "Search",
+    "error": "Error"
   },
-  "settings": {
-    "language": "Language"
+  "nav": {
+    "appName": "Pixl64",
+    "dashboard": "Dashboard",
+    "controls": "Controls",
+    "sendImage": "Send image",
+    "favorites": "Favorites",
+    "disconnect": "Disconnect"
+  },
+  "status": {
+    "connectedTo": "Connected — {ip}",
+    "notConnected": "Not connected"
+  },
+  "connection": {
+    "title": "Connection",
+    "manualIp": "Manual IP",
+    "ipPlaceholder": "192.168.1.xxx",
+    "discoveredDevices": "Discovered devices",
+    "discover": "Discover",
+    "discovering": "Discovering…",
+    "discoverHint": "Click \"Discover\" to scan for devices on the local network.",
+    "errorConnect": "Connection error"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "statusLine": "Connected to {ip} — Brightness: {brightness}%",
+    "changeDevice": "Change device"
+  },
+  "controls": {
+    "title": "Controls",
+    "needConnection": "Connect to a device first.",
+    "brightness": "Brightness",
+    "channel": "Channel",
+    "power": "Screen",
+    "powerOn": "On",
+    "powerOff": "Off"
+  },
+  "send": {
+    "title": "Send image",
+    "or": "or",
+    "urlPlaceholder": "https://example.com/image.png",
+    "load": "Load",
+    "sendToPixoo": "Send to Pixoo-64",
+    "sending": "Sending…",
+    "sent": "Image sent!",
+    "favoriteLabelTitle": "Favorite name (optional)",
+    "favoriteLabelPlaceholder": "Ex: Halo Logo",
+    "saveAsFavorite": "Save as favorite",
+    "noThanks": "No thanks",
+    "addedToFavorites": "Added to favorites!",
+    "invalidImage": "File is not a valid image",
+    "errorLoading": "Error loading image",
+    "errorSending": "Error sending image"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "searchPlaceholder": "Search…",
+    "grid3Aria": "3-column grid",
+    "grid5Aria": "5-column grid",
+    "empty": "No favorites",
+    "noResults": "No results",
+    "deleteConfirmTitle": "Delete this favorite?",
+    "deleteConfirmLabelled": "« {label} » will be permanently deleted.",
+    "deleteConfirmUnlabelled": "This favorite will be permanently deleted.",
+    "sendAriaLabel": "Send to device",
+    "sendErrorAriaLabel": "Send error: {message}",
+    "removeAriaLabel": "Delete favorite"
+  },
+  "image": {
+    "choose": "Choose an image",
+    "cropperHint": "Load an image to crop it",
+    "noPreview": "No image selected"
   }
 }

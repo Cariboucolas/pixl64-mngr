@@ -1,7 +1,12 @@
 import { createI18n } from 'vue-i18n'
 import en from '../locales/en.json'
 import fr from '../locales/fr.json'
-import { DEFAULT_LOCALE, resolveLocale, setStoredLocale, type SupportedLocale } from './locale'
+import {
+  DEFAULT_LOCALE,
+  resolveLocale,
+  type SupportedLocale,
+  setStoredLocale,
+} from './locale'
 
 export const i18n = createI18n({
   legacy: false,

@@ -2,11 +2,84 @@
   "common": {
     "cancel": "Annuler",
     "confirm": "Confirmer",
-    "error": "Erreur",
+    "connect": "Connecter",
+    "connecting": "Connexion…",
+    "connected": "Connecté",
+    "delete": "Supprimer",
     "loading": "Chargement…",
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "error": "Erreur"
   },
-  "settings": {
-    "language": "Langue"
+  "nav": {
+    "appName": "Pixl64",
+    "dashboard": "Dashboard",
+    "controls": "Contrôles",
+    "sendImage": "Envoyer image",
+    "favorites": "Favoris",
+    "disconnect": "Déconnecter"
+  },
+  "status": {
+    "connectedTo": "Connecté — {ip}",
+    "notConnected": "Non connecté"
+  },
+  "connection": {
+    "title": "Connexion",
+    "manualIp": "IP manuelle",
+    "ipPlaceholder": "192.168.1.xxx",
+    "discoveredDevices": "Appareils détectés",
+    "discover": "Rechercher",
+    "discovering": "Recherche…",
+    "discoverHint": "Cliquez sur \"Rechercher\" pour détecter les appareils sur le réseau local.",
+    "errorConnect": "Erreur de connexion"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "statusLine": "Connecté à {ip} — Luminosité : {brightness}%",
+    "changeDevice": "Changer d'appareil"
+  },
+  "controls": {
+    "title": "Contrôles",
+    "needConnection": "Connectez-vous d'abord à un appareil.",
+    "brightness": "Luminosité",
+    "channel": "Canal",
+    "power": "Écran",
+    "powerOn": "Allumé",
+    "powerOff": "Éteint"
+  },
+  "send": {
+    "title": "Envoyer une image",
+    "or": "ou",
+    "urlPlaceholder": "https://example.com/image.png",
+    "load": "Charger",
+    "sendToPixoo": "Envoyer au Pixoo-64",
+    "sending": "Envoi…",
+    "sent": "Image envoyée !",
+    "favoriteLabelTitle": "Nom du favori (optionnel)",
+    "favoriteLabelPlaceholder": "Ex: Logo Halo",
+    "saveAsFavorite": "Sauvegarder en favori",
+    "noThanks": "Non merci",
+    "addedToFavorites": "Ajouté aux favoris !",
+    "invalidImage": "Le fichier n'est pas une image valide",
+    "errorLoading": "Erreur lors du chargement de l'image",
+    "errorSending": "Erreur lors de l'envoi"
+  },
+  "favorites": {
+    "title": "Favoris",
+    "searchPlaceholder": "Rechercher…",
+    "grid3Aria": "Grille 3 colonnes",
+    "grid5Aria": "Grille 5 colonnes",
+    "empty": "Aucun favori",
+    "noResults": "Aucun résultat",
+    "deleteConfirmTitle": "Supprimer ce favori ?",
+    "deleteConfirmLabelled": "« {label} » sera supprimé définitivement.",
+    "deleteConfirmUnlabelled": "Ce favori sera supprimé définitivement.",
+    "sendAriaLabel": "Envoyer au device",
+    "sendErrorAriaLabel": "Erreur d'envoi : {message}",
+    "removeAriaLabel": "Supprimer le favori"
+  },
+  "image": {
+    "choose": "Choisir une image",
+    "cropperHint": "Chargez une image pour la cadrer",
+    "noPreview": "Aucune image sélectionnée"
   }
 }
