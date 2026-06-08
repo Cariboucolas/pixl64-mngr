@@ -1,6 +1,10 @@
 import ipaddr from 'ipaddr.js'
+import { i18n } from '../../i18n'
 import type { DivoomClient } from './client'
 import * as commands from './commands'
+
+const t = (key: string, params?: Record<string, unknown>): string =>
+  i18n.global.t(key, params ?? {})
 
 export const MAX_FILE_SIZE_MB = 20
 export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
@@ -11,46 +15,46 @@ export const validateImageUrl = (rawUrl: string): URL => {
   try {
     url = new URL(rawUrl)
   } catch {
-    throw new Error("L'URL est invalide")
+    throw new Error(t('errors.url.invalid'))
   }
 
   if (url.protocol !== 'https:') {
-    throw new Error('Seules les URLs https:// sont autorisées')
+    throw new Error(t('errors.url.nonHttps'))
   }
 
   // IPv6 hostnames are bracketed in URLs: [::1] → ::1
   const hostname = url.hostname.replace(/^\[|\]$/g, '')
 
   if (hostname === 'localhost') {
-    throw new Error('Hostname local (localhost) interdit')
+    throw new Error(t('errors.url.localhost'))
   }
 
   if (hostname.endsWith('.local')) {
-    throw new Error('Hostname mDNS (.local) interdit')
+    throw new Error(t('errors.url.mdns'))
   }
 
   // Decimal IPv4 like 2130706433 (= 127.0.0.1) — bypasses dotted-IP checks
   if (/^\d+$/.test(hostname)) {
-    throw new Error('Notation IPv4 décimale non autorisée')
+    throw new Error(t('errors.url.decimalIpv4'))
   }
 
   if (ipaddr.isValid(hostname)) {
     const range = ipaddr.parse(hostname).range()
 
     if (range === 'loopback') {
-      throw new Error('Adresse loopback non autorisée')
+      throw new Error(t('errors.url.loopback'))
     }
     if (range === 'private') {
-      throw new Error('Adresse privée non autorisée')
+      throw new Error(t('errors.url.private'))
     }
     if (range === 'linkLocal') {
-      throw new Error('Adresse link-local non autorisée')
+      throw new Error(t('errors.url.linkLocal'))
     }
     if (range === 'ipv4Mapped') {
-      throw new Error('IPv4-mapped IPv6 non autorisée')
+      throw new Error(t('errors.url.ipv4Mapped'))
     }
     if (range !== 'unicast') {
-      throw new Error(`Adresse IP réservée non autorisée (${range})`)
+      throw new Error(t('errors.url.reservedIp', { range }))
     }
   }
 
@@ -61,17 +65,17 @@ export const validateImageResponse = async (
   response: Response,
 ): Promise<ArrayBuffer> => {
   if (!response.ok) {
-    throw new Error(`Erreur HTTP! status: ${response.status}`)
+    throw new Error(t('errors.http.status', { status: response.status }))
   }
   const contentType = response.headers.get('content-type') || ''
   if (!contentType.startsWith('image/')) {
-    throw new Error("L'URL ne pointe pas vers une image")
+    throw new Error(t('errors.http.notImage'))
   }
   const buffer = await response.arrayBuffer()
   if (buffer.byteLength > MAX_FILE_SIZE_BYTES) {
-    const actualMb = buffer.byteLength / (1024 * 1024)
+    const actualMb = (buffer.byteLength / (1024 * 1024)).toFixed(2)
     throw new Error(
-      `L'image est trop volumineuse : ${actualMb.toFixed(2)} MB (maximum : ${MAX_FILE_SIZE_MB} MB).`,
+      t('errors.http.tooLarge', { actualMb, maxMb: MAX_FILE_SIZE_MB }),
     )
   }
   return buffer
@@ -83,7 +87,7 @@ export const validateImageDimensions = (img: HTMLImageElement): void => {
     img.naturalHeight > MAX_IMAGE_DIMENSION
   ) {
     throw new Error(
-      `L'image dépasse les dimensions maximales de ${MAX_IMAGE_DIMENSION}x${MAX_IMAGE_DIMENSION}px`,
+      t('errors.image.dimensionTooLarge', { max: MAX_IMAGE_DIMENSION }),
     )
   }
 }
@@ -129,7 +133,7 @@ export const dataUrlToImageData = (
       ctx.drawImage(img, 0, 0, size, size)
       resolve(ctx.getImageData(0, 0, size, size))
     }
-    img.onerror = () => reject(new Error("impossible de charger l'image"))
+    img.onerror = () => reject(new Error(t('errors.image.loadFailed')))
     img.src = dataUrl
   })
 }

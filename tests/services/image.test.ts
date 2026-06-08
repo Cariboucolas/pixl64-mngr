@@ -90,7 +90,7 @@ describe('validateImageResponse', () => {
     })
     // When & Then
     await expect(validateImageResponse(response)).rejects.toThrow(
-      "L'URL ne pointe pas vers une image",
+      /not.*image|ne pointe pas/i,
     )
   })
 
@@ -103,7 +103,7 @@ describe('validateImageResponse', () => {
     })
     // When & Then
     await expect(validateImageResponse(response)).rejects.toThrow(
-      'trop volumineuse',
+      /too large|volumineuse/i,
     )
   })
 
@@ -130,7 +130,9 @@ describe('validateImageDimensions', () => {
       naturalHeight: 100,
     } as HTMLImageElement
     // When & Then
-    expect(() => validateImageDimensions(img)).toThrow('dimensions maximales')
+    expect(() => validateImageDimensions(img)).toThrow(
+      /exceeds|dimensions max/i,
+    )
   })
 
   it('throws when height exceeds max', () => {
@@ -140,7 +142,9 @@ describe('validateImageDimensions', () => {
       naturalHeight: MAX_IMAGE_DIMENSION + 1,
     } as HTMLImageElement
     // When & Then
-    expect(() => validateImageDimensions(img)).toThrow('dimensions maximales')
+    expect(() => validateImageDimensions(img)).toThrow(
+      /exceeds|dimensions max/i,
+    )
   })
 
   it('does not throw when dimensions are within bounds', () => {
@@ -367,7 +371,7 @@ describe('validateImageUrl', () => {
     'not a url',
     'http//missing-colon',
   ])('throws on malformed URL: %s', (url) => {
-    expect(() => validateImageUrl(url)).toThrow(/invalide|malform/i)
+    expect(() => validateImageUrl(url)).toThrow(/invalid|malform/i)
   })
 
   it.each([
