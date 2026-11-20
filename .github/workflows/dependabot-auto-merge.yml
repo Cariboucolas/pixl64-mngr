@@ -1,0 +1,40 @@
+# Turns on auto-merge for Dependabot's minor and patch updates of npm and cargo
+# dependencies. GitHub then merges the pull request only once the checks that
+# the protection of main requires (Backend, Frontend) have passed: CI is the
+# judge. Major updates and GitHub Actions updates are left for the owner, since
+# an action update changes CI itself.
+#
+# Runs on pull_request, not pull_request_target: the job never checks out the
+# pull request's code, and a Dependabot run gets write access only through the
+# permissions below.
+name: Dependabot auto-merge
+
+on: pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  auto-merge:
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'Cariboucolas/pixl64-mngr'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Read Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # update-type is the highest semver change in the pull request, so a
+      # group that holds a major update is never merged on its own.
+      - name: Enable auto-merge for minor and patch updates
+        if: >-
+          (steps.metadata.outputs.package-ecosystem == 'npm_and_yarn' || steps.metadata.outputs.package-ecosystem == 'cargo')
+          && (steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch')
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

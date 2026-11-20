@@ -1,0 +1,5 @@
+# Settings only: this repository has a single package (the root).
+# pnpm 11 no longer reads the "pnpm" field of package.json, so settings live
+# here, where pnpm 10 (CI) and pnpm 11 (update bots, local) both read them.
+overrides:
+  brace-expansion: ^2.0.3
