@@ -1,0 +1,72 @@
+# Weekly version updates, grouped so that a week brings a handful of pull
+# requests rather than one per package. Minor and patch updates of npm and cargo
+# merge on their own once the required CI checks pass (see
+# workflows/dependabot-auto-merge.yml); major updates and GitHub Actions updates
+# wait for the owner. A Dependabot pull request runs without the repository's
+# Actions secrets.
+#
+# Security updates are not configured here: they follow the repository's
+# setting, outside these groups and this schedule.
+version: 2
+
+updates:
+  # Front end (Vue + Vite); pnpm is read under "npm".
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Paris
+    # A version is offered a week after its release, not three days: a
+    # compromised release is usually found and pulled within days.
+    cooldown:
+      default-days: 7
+    # Minor and patch updates of the week in one pull request per kind of
+    # dependency; a major update stays alone, since it is the one that breaks.
+    groups:
+      development:
+        dependency-type: development
+        update-types: [minor, patch]
+      production:
+        dependency-type: production
+        update-types: [minor, patch]
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+
+  # Tauri back end. Cargo has no development/production split in Dependabot
+  # groups, so all minor and patch updates share one pull request.
+  - package-ecosystem: cargo
+    directory: /src-tauri
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Paris
+    cooldown:
+      default-days: 7
+    groups:
+      rust:
+        patterns: ["*"]
+        update-types: [minor, patch]
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Paris
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci
