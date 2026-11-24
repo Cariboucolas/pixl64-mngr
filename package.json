@@ -17,14 +17,14 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-http": "^2.5.7",
+    "@tauri-apps/plugin-http": "^2.9.0",
     "@tauri-apps/plugin-opener": "^2",
-    "@tauri-apps/plugin-store": "^2.4.2",
-    "ipaddr.js": "^2.4.0",
+    "@tauri-apps/plugin-store": "^2.5.1",
+    "ipaddr.js": "^2.5.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.45",
-    "vue-i18n": "^11.4.19",
-    "vue-router": "^5.0.3"
+    "vue-i18n": "^11.4.21",
+    "vue-router": "^5.5.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.7",
