@@ -30,6 +30,7 @@
     "discover": "Rechercher",
     "discovering": "Recherche…",
     "discoverHint": "Cliquez sur \"Rechercher\" pour détecter les appareils sur le réseau local.",
+    "noDevicesFound": "Aucun appareil trouvé. Vérifiez qu'il est allumé et connecté au même réseau.",
     "errorConnect": "Erreur de connexion"
   },
   "dashboard": {

@@ -98,6 +98,9 @@ const getDeviceStatus = (device: DivoomDevice) => {
           @connect="handleConnect"
         />
       </div>
+      <p v-else-if="deviceStore.hasDiscovered" class="hint">
+        {{ t('connection.noDevicesFound') }}
+      </p>
       <p v-else class="hint">
         {{ t('connection.discoverHint') }}
       </p>

@@ -30,6 +30,7 @@
     "discover": "Discover",
     "discovering": "Discovering…",
     "discoverHint": "Click \"Discover\" to scan for devices on the local network.",
+    "noDevicesFound": "No device found. Check that it is powered on and connected to the same network.",
     "errorConnect": "Connection error"
   },
   "dashboard": {
