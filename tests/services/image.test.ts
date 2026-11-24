@@ -366,13 +366,12 @@ describe('validateImageUrl', () => {
     expect(result.protocol).toBe('https:')
   })
 
-  it.each([
-    '',
-    'not a url',
-    'http//missing-colon',
-  ])('throws on malformed URL: %s', (url) => {
-    expect(() => validateImageUrl(url)).toThrow(/invalid|malform/i)
-  })
+  it.each(['', 'not a url', 'http//missing-colon'])(
+    'throws on malformed URL: %s',
+    (url) => {
+      expect(() => validateImageUrl(url)).toThrow(/invalid|malform/i)
+    },
+  )
 
   it.each([
     'http://example.com/cat.png',
@@ -384,21 +383,19 @@ describe('validateImageUrl', () => {
     expect(() => validateImageUrl(url)).toThrow(/https/i)
   })
 
-  it.each([
-    'https://localhost/',
-    'https://127.0.0.1/',
-    'https://[::1]/',
-  ])('rejects loopback host: %s', (url) => {
-    expect(() => validateImageUrl(url)).toThrow(/loopback|local/i)
-  })
+  it.each(['https://localhost/', 'https://127.0.0.1/', 'https://[::1]/'])(
+    'rejects loopback host: %s',
+    (url) => {
+      expect(() => validateImageUrl(url)).toThrow(/loopback|local/i)
+    },
+  )
 
-  it.each([
-    'https://10.0.0.1/',
-    'https://192.168.1.1/',
-    'https://172.16.0.1/',
-  ])('rejects RFC1918 private IP: %s', (url) => {
-    expect(() => validateImageUrl(url)).toThrow(/priv/i)
-  })
+  it.each(['https://10.0.0.1/', 'https://192.168.1.1/', 'https://172.16.0.1/'])(
+    'rejects RFC1918 private IP: %s',
+    (url) => {
+      expect(() => validateImageUrl(url)).toThrow(/priv/i)
+    },
+  )
 
   it('rejects IPv4 link-local (169.254.x.x)', () => {
     expect(() => validateImageUrl('https://169.254.0.1/')).toThrow(
