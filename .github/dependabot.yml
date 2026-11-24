@@ -31,6 +31,12 @@ updates:
       production:
         dependency-type: production
         update-types: [minor, patch]
+    # TypeScript 7 (the native Go port) no longer ships the JavaScript compiler
+    # API that vue-tsc builds on, so type-checking .vue files fails with it.
+    # Remove this once vue-tsc supports TypeScript 7.
+    ignore:
+      - dependency-name: typescript
+        versions: [">=7"]
     open-pull-requests-limit: 5
     commit-message:
       prefix: chore
