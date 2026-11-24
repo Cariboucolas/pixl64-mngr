@@ -19,6 +19,8 @@ export const useDeviceStore = defineStore('device', () => {
   const screenOn = ref(true)
   const discoveredDevices = ref<DivoomDevice[]>([])
   const discovering = ref(false)
+  // Tells "never searched" from "searched and found nothing": both leave the list empty.
+  const hasDiscovered = ref(false)
 
   let client: DivoomClient | null = null
 
@@ -82,9 +84,11 @@ export const useDeviceStore = defineStore('device', () => {
 
   const discover = async (): Promise<void> => {
     discovering.value = true
+    hasDiscovered.value = false
     error.value = null
     try {
       discoveredDevices.value = await discoverDevices()
+      hasDiscovered.value = true
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Erreur de découverte'
       discoveredDevices.value = []
@@ -105,6 +109,7 @@ export const useDeviceStore = defineStore('device', () => {
     screenOn,
     discoveredDevices,
     discovering,
+    hasDiscovered,
     isReady,
     connect,
     disconnect,

@@ -14,17 +14,12 @@ describe('isFetchImageError', () => {
     ).toBe(true)
   })
 
-  it.each([
-    null,
-    undefined,
-    42,
-    'kind',
-    {},
-    { kind: 42 },
-    [],
-  ])('returns false for non-FetchImageError input: %s', (value) => {
-    expect(isFetchImageError(value)).toBe(false)
-  })
+  it.each([null, undefined, 42, 'kind', {}, { kind: 42 }, []])(
+    'returns false for non-FetchImageError input: %s',
+    (value) => {
+      expect(isFetchImageError(value)).toBe(false)
+    },
+  )
 })
 
 describe('fetchImageErrorMessage', () => {

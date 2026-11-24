@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.7/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!!**/dist", "!!**/src-tauri"]
+    "includes": [
+      "**",
+      "!!**/dist",
+      "!!**/src-tauri",
+      "!**/*.md",
+      "!**/*.yml",
+      "!**/*.yaml",
+      "!**/*.svg"
+    ]
   },
   "formatter": {
     "attributePosition": "auto",
@@ -27,7 +35,7 @@
         "noUnusedVariables": "off",
         "noUnusedImports": "off"
       },
-      "recommended": true
+      "preset": "recommended"
     }
   },
   "javascript": {
