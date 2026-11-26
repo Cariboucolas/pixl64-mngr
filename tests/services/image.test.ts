@@ -6,10 +6,8 @@ import {
   computeCropParams,
   encodeFrame,
   extractCrop,
-  MAX_FILE_SIZE_BYTES,
   MAX_IMAGE_DIMENSION,
   validateImageDimensions,
-  validateImageResponse,
   validateImageUrl,
 } from '../../src/services/divoom/image'
 
@@ -71,54 +69,6 @@ describe('clampOffset', () => {
 
   it('preserves offset when image is larger and offset within bounds', () => {
     expect(clampOffset(-100, 500, 300)).toBe(-100)
-  })
-})
-
-describe('validateImageResponse', () => {
-  it('throws on non-ok response', async () => {
-    // Given
-    const response = new Response(null, { status: 404 })
-    // When & Then
-    await expect(validateImageResponse(response)).rejects.toThrow('404')
-  })
-
-  it('throws on non-image content-type', async () => {
-    // Given
-    const response = new Response(null, {
-      status: 200,
-      headers: { 'content-type': 'text/html' },
-    })
-    // When & Then
-    await expect(validateImageResponse(response)).rejects.toThrow(
-      /not.*image|ne pointe pas/i,
-    )
-  })
-
-  it('throws when file too large', async () => {
-    // Given
-    const tooBig = new ArrayBuffer(MAX_FILE_SIZE_BYTES + 1)
-    const response = new Response(tooBig, {
-      status: 200,
-      headers: { 'content-type': 'image/png' },
-    })
-    // When & Then
-    await expect(validateImageResponse(response)).rejects.toThrow(
-      /too large|volumineuse/i,
-    )
-  })
-
-  it('returns buffer on valid response', async () => {
-    // Given
-    const valid = new ArrayBuffer(100)
-    const response = new Response(valid, {
-      status: 200,
-      headers: { 'content-type': 'image/png' },
-    })
-    // When
-    const result = await validateImageResponse(response)
-
-    // Then
-    expect(result.byteLength).toBe(100)
   })
 })
 

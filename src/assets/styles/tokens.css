@@ -1,0 +1,36 @@
+/*
+ * "LED matrix" style (ADR-0004). Contrast against --color-bg / --color-panel / --color-surface:
+ * text 16.5 / 15.8 / 15.0, secondary text 5.9 / 5.7 / 5.4, accent 10.7 / 10.3 / 9.8,
+ * danger 6.5 / 6.3 / 5.9, success 9.7 / 9.3 / 8.8, control border 3.4 on --color-bg.
+ * --color-rule only separates areas and carries no information.
+ */
+:root {
+  --color-bg: #0b0b0c;
+  --color-panel: #111113;
+  --color-surface: #17171a;
+  --color-rule: #2a2a2e;
+  --color-control-border: #66666c;
+  --color-text: #ecebe6;
+  --color-text-secondary: #8d8d88;
+  --color-accent: #ffb000;
+  --color-accent-strong: #ffc54d;
+  --color-on-accent: #0b0b0c;
+  --color-success: #3ecf6e;
+  --color-danger: #ff5d5d;
+
+  --font-mono:
+    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --text-xs: 0.6875rem;
+  --text-sm: 0.75rem;
+  --text-md: 0.8125rem;
+  --text-lg: 1rem;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+
+  --radius: 2px;
+  --panel-width: 248px;
+}

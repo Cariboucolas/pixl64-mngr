@@ -1,87 +1,83 @@
 {
   "common": {
     "cancel": "Annuler",
-    "confirm": "Confirmer",
     "connect": "Connecter",
     "connecting": "Connexion…",
     "connected": "Connecté",
     "delete": "Supprimer",
-    "loading": "Chargement…",
-    "search": "Rechercher",
-    "error": "Erreur"
+    "loading": "Chargement…"
   },
-  "nav": {
-    "appName": "Pixl64",
-    "dashboard": "Dashboard",
-    "controls": "Contrôles",
-    "sendImage": "Envoyer image",
-    "favorites": "Favoris",
-    "disconnect": "Déconnecter"
-  },
-  "status": {
-    "connectedTo": "Connecté — {ip}",
-    "notConnected": "Non connecté"
+  "tabs": {
+    "label": "Sections",
+    "library": "Bibliothèque",
+    "new": "Nouveau",
+    "faces": "Cadrans",
+    "tools": "Outils",
+    "comingSoon": "bientôt"
   },
   "connection": {
-    "title": "Connexion",
-    "manualIp": "IP manuelle",
+    "title": "Connexion à l'appareil",
+    "manualIp": "Adresse IP",
     "ipPlaceholder": "192.168.1.xxx",
-    "discoveredDevices": "Appareils détectés",
+    "discoveredDevices": "Appareils du réseau",
     "discover": "Rechercher",
     "discovering": "Recherche…",
-    "discoverHint": "Cliquez sur \"Rechercher\" pour détecter les appareils sur le réseau local.",
-    "noDevicesFound": "Aucun appareil trouvé. Vérifiez qu'il est allumé et connecté au même réseau.",
-    "errorConnect": "Erreur de connexion"
+    "discoverHint": "Cliquez sur « Rechercher » pour trouver les appareils du réseau local.",
+    "noDevicesFound": "Aucun appareil trouvé. Vérifiez qu'il est allumé et sur le même réseau."
   },
-  "dashboard": {
-    "title": "Dashboard",
-    "statusLine": "Connecté à {ip} — Luminosité : {brightness}%",
-    "changeDevice": "Changer d'appareil"
-  },
-  "controls": {
-    "title": "Contrôles",
-    "needConnection": "Connectez-vous d'abord à un appareil.",
+  "panel": {
+    "title": "Appareil",
+    "preview": "Aperçu de l'appareil",
+    "noFrame": "Aucune image envoyée depuis cette session",
+    "unnamedDevice": "Pixoo",
     "brightness": "Luminosité",
+    "screen": "Écran",
+    "screenOn": "Allumé",
+    "screenOff": "Éteint",
     "channel": "Canal",
-    "power": "Écran",
-    "powerOn": "Allumé",
-    "powerOff": "Éteint"
+    "changeDevice": "Changer d'appareil",
+    "changeLanguage": "Changer de langue"
   },
-  "send": {
-    "title": "Envoyer une image",
+  "channel": {
+    "faces": "Cadrans",
+    "cloud": "Cloud",
+    "visualizer": "Visualiseur",
+    "custom": "Personnalisé",
+    "blackScreen": "Écran noir"
+  },
+  "new": {
+    "chooseFile": "Choisir un fichier",
     "or": "ou",
+    "urlLabel": "URL de la source",
     "urlPlaceholder": "https://example.com/image.png",
     "load": "Charger",
-    "sendToPixoo": "Envoyer au Pixoo-64",
+    "sourceHint": "Importez une source pour la recadrer en 64 × 64.",
+    "cropHint": "Glissez pour déplacer, molette pour zoomer.",
+    "previewLabel": "Aperçu de l'image recadrée",
+    "send": "Envoyer à l'appareil",
     "sending": "Envoi…",
-    "sent": "Image envoyée !",
-    "favoriteLabelTitle": "Nom du favori (optionnel)",
-    "favoriteLabelPlaceholder": "Ex: Logo Halo",
-    "saveAsFavorite": "Sauvegarder en favori",
+    "sent": "Image envoyée.",
+    "labelTitle": "Libellé dans la bibliothèque (facultatif)",
+    "labelPlaceholder": "Ex. : Logo Halo",
+    "save": "Enregistrer dans la bibliothèque",
     "noThanks": "Non merci",
-    "addedToFavorites": "Ajouté aux favoris !",
+    "saved": "Enregistré dans la bibliothèque.",
     "invalidImage": "Le fichier n'est pas une image valide",
-    "errorLoading": "Erreur lors du chargement de l'image",
-    "errorSending": "Erreur lors de l'envoi"
+    "errorLoading": "Erreur lors du chargement de l'image"
   },
-  "favorites": {
-    "title": "Favoris",
+  "library": {
     "searchPlaceholder": "Rechercher…",
-    "grid3Aria": "Grille 3 colonnes",
-    "grid5Aria": "Grille 5 colonnes",
-    "empty": "Aucun favori",
+    "largeAria": "Grandes vignettes",
+    "smallAria": "Petites vignettes",
+    "empty": "La bibliothèque est vide. Envoyez une image depuis « Nouveau » pour l'y enregistrer.",
     "noResults": "Aucun résultat",
-    "deleteConfirmTitle": "Supprimer ce favori ?",
+    "unlabelled": "Sans libellé",
+    "deleteConfirmTitle": "Supprimer cet élément ?",
     "deleteConfirmLabelled": "« {label} » sera supprimé définitivement.",
-    "deleteConfirmUnlabelled": "Ce favori sera supprimé définitivement.",
-    "sendAriaLabel": "Envoyer au device",
-    "sendErrorAriaLabel": "Erreur d'envoi : {message}",
-    "removeAriaLabel": "Supprimer le favori"
-  },
-  "image": {
-    "choose": "Choisir une image",
-    "cropperHint": "Chargez une image pour la cadrer",
-    "noPreview": "Aucune image sélectionnée"
+    "deleteConfirmUnlabelled": "Cet élément sera supprimé définitivement.",
+    "sendAriaLabel": "Envoyer à l'appareil",
+    "sendErrorAriaLabel": "Échec de l'envoi : {message}",
+    "removeAriaLabel": "Supprimer de la bibliothèque"
   },
   "errors": {
     "url": {
@@ -112,7 +108,8 @@
       "httpStatus": "L'appareil a répondu par une erreur HTTP {status}",
       "invalidResponse": "Réponse inattendue : ce n'est peut-être pas un Pixoo",
       "commandRefused": "L'appareil a refusé la commande (code {errorCode})",
-      "unknown": "Échec de l'échange avec l'appareil"
+      "unknown": "Échec de l'échange avec l'appareil",
+      "notConnected": "Aucun appareil connecté"
     }
   }
 }

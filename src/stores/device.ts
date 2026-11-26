@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, ref, shallowRef } from 'vue'
+import { i18n } from '../i18n'
 import * as commands from '../services/divoom/commands'
 import { deviceErrorMessage } from '../services/divoom/deviceError'
 import { type DeviceLink, getDeviceGateway } from '../services/divoom/gateway'
+import { STILL_CHANNEL, sendStaticImage } from '../services/divoom/image'
 import type {
   DeviceReply,
   DeviceSettings,
@@ -21,6 +23,8 @@ export const useDeviceStore = defineStore('device', () => {
   const discovering = ref(false)
   // Tells "never searched" from "searched and found nothing": both leave the list empty.
   const hasDiscovered = ref(false)
+  /** The last frame sent: the app cannot read what the device shows. */
+  const lastFrame = shallowRef<ImageData | null>(null)
 
   const linkTo = (deviceIp: string): DeviceLink => ({
     send: (payload) => getDeviceGateway().send(deviceIp, payload),
@@ -56,6 +60,7 @@ export const useDeviceStore = defineStore('device', () => {
   const disconnect = (): void => {
     connected.value = false
     ip.value = ''
+    lastFrame.value = null
     error.value = null
   }
 
@@ -79,6 +84,14 @@ export const useDeviceStore = defineStore('device', () => {
     const newState = !screenOn.value
     await link.send(commands.powerOnOff(newState))
     screenOn.value = newState
+  }
+
+  const sendStill = async (frame: ImageData): Promise<void> => {
+    const link = getLink()
+    if (!link) throw new Error(i18n.global.t('errors.device.notConnected'))
+    await sendStaticImage(link, frame)
+    channel.value = STILL_CHANNEL
+    lastFrame.value = frame
   }
 
   const discover = async (): Promise<void> => {
@@ -107,12 +120,14 @@ export const useDeviceStore = defineStore('device', () => {
     discoveredDevices,
     discovering,
     hasDiscovered,
+    lastFrame,
     isReady,
     connect,
     disconnect,
     setBrightness,
     setChannel,
     togglePower,
+    sendStill,
     discover,
     getLink,
   }

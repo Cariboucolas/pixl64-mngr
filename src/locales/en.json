@@ -1,87 +1,83 @@
 {
   "common": {
     "cancel": "Cancel",
-    "confirm": "Confirm",
     "connect": "Connect",
     "connecting": "Connecting…",
     "connected": "Connected",
     "delete": "Delete",
-    "loading": "Loading…",
-    "search": "Search",
-    "error": "Error"
+    "loading": "Loading…"
   },
-  "nav": {
-    "appName": "Pixl64",
-    "dashboard": "Dashboard",
-    "controls": "Controls",
-    "sendImage": "Send image",
-    "favorites": "Favorites",
-    "disconnect": "Disconnect"
-  },
-  "status": {
-    "connectedTo": "Connected — {ip}",
-    "notConnected": "Not connected"
+  "tabs": {
+    "label": "Sections",
+    "library": "Library",
+    "new": "New",
+    "faces": "Faces",
+    "tools": "Tools",
+    "comingSoon": "soon"
   },
   "connection": {
-    "title": "Connection",
-    "manualIp": "Manual IP",
+    "title": "Connect to the device",
+    "manualIp": "IP address",
     "ipPlaceholder": "192.168.1.xxx",
-    "discoveredDevices": "Discovered devices",
+    "discoveredDevices": "Devices on the network",
     "discover": "Discover",
-    "discovering": "Discovering…",
-    "discoverHint": "Click \"Discover\" to scan for devices on the local network.",
-    "noDevicesFound": "No device found. Check that it is powered on and connected to the same network.",
-    "errorConnect": "Connection error"
+    "discovering": "Searching…",
+    "discoverHint": "Click “Discover” to find the devices on the local network.",
+    "noDevicesFound": "No device found. Check that it is on and on the same network."
   },
-  "dashboard": {
-    "title": "Dashboard",
-    "statusLine": "Connected to {ip} — Brightness: {brightness}%",
-    "changeDevice": "Change device"
-  },
-  "controls": {
-    "title": "Controls",
-    "needConnection": "Connect to a device first.",
+  "panel": {
+    "title": "Device",
+    "preview": "Device preview",
+    "noFrame": "No image sent in this session",
+    "unnamedDevice": "Pixoo",
     "brightness": "Brightness",
+    "screen": "Screen",
+    "screenOn": "On",
+    "screenOff": "Off",
     "channel": "Channel",
-    "power": "Screen",
-    "powerOn": "On",
-    "powerOff": "Off"
+    "changeDevice": "Change device",
+    "changeLanguage": "Change language"
   },
-  "send": {
-    "title": "Send image",
+  "channel": {
+    "faces": "Faces",
+    "cloud": "Cloud",
+    "visualizer": "Visualizer",
+    "custom": "Custom",
+    "blackScreen": "Black screen"
+  },
+  "new": {
+    "chooseFile": "Choose a file",
     "or": "or",
+    "urlLabel": "Source URL",
     "urlPlaceholder": "https://example.com/image.png",
     "load": "Load",
-    "sendToPixoo": "Send to Pixoo-64",
+    "sourceHint": "Import a source to crop it to 64 × 64.",
+    "cropHint": "Drag to move, scroll to zoom.",
+    "previewLabel": "Preview of the cropped image",
+    "send": "Send to the device",
     "sending": "Sending…",
-    "sent": "Image sent!",
-    "favoriteLabelTitle": "Favorite name (optional)",
-    "favoriteLabelPlaceholder": "Ex: Halo Logo",
-    "saveAsFavorite": "Save as favorite",
+    "sent": "Image sent.",
+    "labelTitle": "Label in the library (optional)",
+    "labelPlaceholder": "E.g. Halo logo",
+    "save": "Save to the library",
     "noThanks": "No thanks",
-    "addedToFavorites": "Added to favorites!",
-    "invalidImage": "File is not a valid image",
-    "errorLoading": "Error loading image",
-    "errorSending": "Error sending image"
+    "saved": "Saved to the library.",
+    "invalidImage": "The file is not a valid image",
+    "errorLoading": "Error loading the image"
   },
-  "favorites": {
-    "title": "Favorites",
+  "library": {
     "searchPlaceholder": "Search…",
-    "grid3Aria": "3-column grid",
-    "grid5Aria": "5-column grid",
-    "empty": "No favorites",
+    "largeAria": "Large thumbnails",
+    "smallAria": "Small thumbnails",
+    "empty": "The library is empty. Send an image from “New” to save it here.",
     "noResults": "No results",
-    "deleteConfirmTitle": "Delete this favorite?",
-    "deleteConfirmLabelled": "« {label} » will be permanently deleted.",
-    "deleteConfirmUnlabelled": "This favorite will be permanently deleted.",
-    "sendAriaLabel": "Send to device",
-    "sendErrorAriaLabel": "Send error: {message}",
-    "removeAriaLabel": "Delete favorite"
-  },
-  "image": {
-    "choose": "Choose an image",
-    "cropperHint": "Load an image to crop it",
-    "noPreview": "No image selected"
+    "unlabelled": "No label",
+    "deleteConfirmTitle": "Delete this item?",
+    "deleteConfirmLabelled": "“{label}” will be permanently deleted.",
+    "deleteConfirmUnlabelled": "This item will be permanently deleted.",
+    "sendAriaLabel": "Send to the device",
+    "sendErrorAriaLabel": "Sending failed: {message}",
+    "removeAriaLabel": "Remove from the library"
   },
   "errors": {
     "url": {
@@ -112,7 +108,8 @@
       "httpStatus": "The device answered with HTTP error {status}",
       "invalidResponse": "The reply was unexpected: this may not be a Pixoo",
       "commandRefused": "The device refused the command (code {errorCode})",
-      "unknown": "The exchange with the device failed"
+      "unknown": "The exchange with the device failed",
+      "notConnected": "No device connected"
     }
   }
 }

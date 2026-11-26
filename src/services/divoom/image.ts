@@ -6,8 +6,6 @@ import type { DeviceLink } from './gateway'
 const t = (key: string, params?: Record<string, unknown>): string =>
   i18n.global.t(key, params ?? {})
 
-export const MAX_FILE_SIZE_MB = 20
-export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 export const MAX_IMAGE_DIMENSION = 10_000
 
 export const validateImageUrl = (rawUrl: string): URL => {
@@ -59,26 +57,6 @@ export const validateImageUrl = (rawUrl: string): URL => {
   }
 
   return url
-}
-
-export const validateImageResponse = async (
-  response: Response,
-): Promise<ArrayBuffer> => {
-  if (!response.ok) {
-    throw new Error(t('errors.http.status', { status: response.status }))
-  }
-  const contentType = response.headers.get('content-type') || ''
-  if (!contentType.startsWith('image/')) {
-    throw new Error(t('errors.http.notImage'))
-  }
-  const buffer = await response.arrayBuffer()
-  if (buffer.byteLength > MAX_FILE_SIZE_BYTES) {
-    const actualMb = (buffer.byteLength / (1024 * 1024)).toFixed(2)
-    throw new Error(
-      t('errors.http.tooLarge', { actualMb, maxMb: MAX_FILE_SIZE_MB }),
-    )
-  }
-  return buffer
 }
 
 export const validateImageDimensions = (img: HTMLImageElement): void => {
@@ -146,31 +124,20 @@ const uint8ArrayToBase64 = (bytes: Uint8Array): string => {
   return btoa(binary)
 }
 
+/** Channel the device is put on before a still is sent. */
+export const STILL_CHANNEL = 4
+
 export const sendStaticImage = async (
   client: DeviceLink,
   imageData: ImageData,
 ): Promise<void> => {
   await client.send(commands.resetHttpGifId())
   await client.send(commands.clearHttpText())
-  await client.send(commands.setChannel(4))
+  await client.send(commands.setChannel(STILL_CHANNEL))
 
   const picData = encodeFrame(imageData)
   const payload = commands.sendHttpGif(picData, 1, 0, 1, 100, imageData.width)
   await client.send(payload)
-}
-
-export const resizeToCanvas = (
-  source: HTMLImageElement | HTMLCanvasElement,
-  size: number = 64,
-): ImageData => {
-  const canvas = document.createElement('canvas')
-  canvas.width = size
-  canvas.height = size
-  const ctx = canvas.getContext('2d')
-  if (!ctx) throw new Error('Canvas 2D context unavailable')
-  ctx.imageSmoothingEnabled = false
-  ctx.drawImage(source, 0, 0, size, size)
-  return ctx.getImageData(0, 0, size, size)
 }
 
 export const clampScale = (scale: number, min: number, max: number): number =>

@@ -19,7 +19,7 @@
 
 ## Why
 
-Divoom only ships a mobile app for the Pixoo-64. **Pixl64 Mngr** is a native desktop alternative — built for users who want to control the panel from their workstation, send custom images quickly, and keep a local library of favorites without going through the cloud.
+Divoom only ships a mobile app for the Pixoo-64. **Pixl64 Mngr** is a native desktop alternative — built for users who want to control the panel from their workstation, send custom images quickly, and keep a local library without going through the cloud.
 
 ## Features
 
@@ -27,7 +27,7 @@ Divoom only ships a mobile app for the Pixoo-64. **Pixl64 Mngr** is a native des
 - 🔌 **Manual IP connection** as fallback
 - 🎛️ **Device controls** — brightness, channel, power
 - 🖼️ **Send custom images** — local files or URL import, with pan/zoom cropping
-- ⭐ **Favorites library** — save, search and re-send your best images
+- ⭐ **Local library** — save, search and re-send your best images
 - 🌐 **URL import with security** — defense-in-depth (TS + Rust + Tauri capabilities)
 
 ## Installation

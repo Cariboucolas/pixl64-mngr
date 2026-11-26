@@ -21,6 +21,8 @@ export const useSettingsStore = defineStore('settings', () => {
   const autoConnect = ref(defaults.autoConnect)
   const defaultBrightness = ref(defaults.defaultBrightness)
   const loaded = ref(false)
+  /** For this launch only, never saved. */
+  const autoConnectAttempted = ref(false)
 
   let saveTimeout: ReturnType<typeof setTimeout> | null = null
 
@@ -54,6 +56,7 @@ export const useSettingsStore = defineStore('settings', () => {
     autoConnect,
     defaultBrightness,
     loaded,
+    autoConnectAttempted,
     hydrate,
   }
 })

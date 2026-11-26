@@ -18,7 +18,7 @@ Le mot de gauche est celui de l'interface et de la documentation ; l'identifiant
 | Aperçu | `preview` | Rendu à l'écran, en pixels carrés, de ce que l'appareil affichera. |
 | Envoi | `send` | Transmission d'une image fixe ou d'une animation à l'appareil, image par image. |
 | Lecture directe | `direct play` | L'appareil télécharge lui-même un fichier GIF déjà en 64 × 64 depuis une URL, sans passer par le recadrage. |
-| Bibliothèque | `library` | Collection locale des images fixes et animations enregistrées pour être renvoyées. Remplace « favoris » (`favorites` dans le code actuel). |
+| Bibliothèque | `library` | Collection locale des images fixes et animations enregistrées pour être renvoyées. Remplace « favoris » ; le fichier de stockage garde l'ancien nom jusqu'au nouveau format du lot 3. |
 | Élément | `library item` | Une entrée de la bibliothèque : une image fixe ou une animation, avec un libellé facultatif. |
 | Texte défilant | `scrolling text` | Ligne de texte superposée par l'appareil à l'image affichée. |
 | Outil | `tool` | Fonction intégrée de l'appareil : minuteur, chronomètre, tableau de score, sonomètre, buzzer. |

@@ -94,6 +94,68 @@ describe('device store connection', () => {
   })
 })
 
+const frame = (): ImageData =>
+  ({
+    data: new Uint8ClampedArray([255, 0, 0, 255]),
+    width: 1,
+    height: 1,
+    colorSpace: 'srgb',
+  }) as ImageData
+
+describe('device store still image', () => {
+  it('sends a still and remembers it as what the device shows', async () => {
+    const store = useDeviceStore()
+    await store.connect(IP)
+    const still = frame()
+
+    await store.sendStill(still)
+
+    expect(gateway.sent.slice(1).map((c) => c.payload.Command)).toEqual([
+      'Draw/ResetHttpGifId',
+      'Draw/ClearHttpText',
+      'Channel/SetIndex',
+      'Draw/SendHttpGif',
+    ])
+    expect(gateway.sent.at(-1)?.payload).toMatchObject({
+      PicNum: 1,
+      PicWidth: 1,
+      PicData: '/wAA',
+    })
+    expect(store.lastFrame).toStrictEqual(still)
+  })
+
+  it('keeps the previous frame when the send fails', async () => {
+    const store = useDeviceStore()
+    await store.connect(IP)
+    gateway.failWith({ kind: 'commandRefused', errorCode: 3 })
+
+    await expect(store.sendStill(frame())).rejects.toEqual({
+      kind: 'commandRefused',
+      errorCode: 3,
+    })
+
+    expect(store.lastFrame).toBeNull()
+  })
+
+  it('refuses to send while no device is connected', async () => {
+    const store = useDeviceStore()
+
+    await expect(store.sendStill(frame())).rejects.toThrow()
+
+    expect(gateway.sent).toEqual([])
+  })
+
+  it('forgets the frame on disconnect', async () => {
+    const store = useDeviceStore()
+    await store.connect(IP)
+    await store.sendStill(frame())
+
+    store.disconnect()
+
+    expect(store.lastFrame).toBeNull()
+  })
+})
+
 describe('device store discovery', () => {
   it('has not discovered before any search', () => {
     const store = useDeviceStore()
