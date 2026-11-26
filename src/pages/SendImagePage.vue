@@ -92,7 +92,7 @@ const dismissFavoriteForm = () => {
 }
 
 const sendToDevice = async () => {
-  const client = deviceStore.getClient()
+  const client = deviceStore.getLink()
   if (!client || !croppedData.value) return
 
   sending.value = true

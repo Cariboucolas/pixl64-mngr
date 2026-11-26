@@ -105,9 +105,14 @@
       "dimensionTooLarge": "L'image dépasse les dimensions maximales de {max}x{max}px",
       "loadFailed": "Impossible de charger l'image"
     },
-    "discovery": {
-      "httpFailed": "Échec de découverte : HTTP {status}",
-      "apiFailed": "Échec de découverte : {message}"
+    "device": {
+      "invalidIp": "L'adresse doit être une adresse IPv4, par exemple 192.168.1.50",
+      "notPrivateIp": "L'adresse doit appartenir au réseau local",
+      "unreachable": "Appareil injoignable : vérifiez qu'il est allumé et sur le même réseau",
+      "httpStatus": "L'appareil a répondu par une erreur HTTP {status}",
+      "invalidResponse": "Réponse inattendue : ce n'est peut-être pas un Pixoo",
+      "commandRefused": "L'appareil a refusé la commande (code {errorCode})",
+      "unknown": "Échec de l'échange avec l'appareil"
     }
   }
 }

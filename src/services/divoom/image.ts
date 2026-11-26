@@ -1,7 +1,7 @@
 import ipaddr from 'ipaddr.js'
 import { i18n } from '../../i18n'
-import type { DivoomClient } from './client'
 import * as commands from './commands'
+import type { DeviceLink } from './gateway'
 
 const t = (key: string, params?: Record<string, unknown>): string =>
   i18n.global.t(key, params ?? {})
@@ -147,7 +147,7 @@ const uint8ArrayToBase64 = (bytes: Uint8Array): string => {
 }
 
 export const sendStaticImage = async (
-  client: DivoomClient,
+  client: DeviceLink,
   imageData: ImageData,
 ): Promise<void> => {
   await client.send(commands.resetHttpGifId())

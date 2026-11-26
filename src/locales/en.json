@@ -105,9 +105,14 @@
       "dimensionTooLarge": "Image exceeds max dimensions of {max}x{max}px",
       "loadFailed": "Failed to load image"
     },
-    "discovery": {
-      "httpFailed": "Discovery failed: HTTP {status}",
-      "apiFailed": "Discovery failed: {message}"
+    "device": {
+      "invalidIp": "The address must be an IPv4 address, for example 192.168.1.50",
+      "notPrivateIp": "The address must be on the local network",
+      "unreachable": "Device unreachable: check that it is on and on the same network",
+      "httpStatus": "The device answered with HTTP error {status}",
+      "invalidResponse": "The reply was unexpected: this may not be a Pixoo",
+      "commandRefused": "The device refused the command (code {errorCode})",
+      "unknown": "The exchange with the device failed"
     }
   }
 }

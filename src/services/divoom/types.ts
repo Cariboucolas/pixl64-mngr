@@ -10,8 +10,9 @@ export interface CommandPayload {
   [key: string]: unknown
 }
 
-export interface DeviceResponse {
-  error_code: number
+/** A device reply. Some commands (`Channel/GetIndex`) answer without `error_code`. */
+export interface DeviceReply {
+  error_code?: number
   [key: string]: unknown
 }
 
@@ -31,12 +32,6 @@ export interface DeviceSettings {
   LightSwitch: number
 }
 
-export interface DiscoveryResponse {
-  ReturnCode: number
-  ReturnMessage: string
-  DeviceList: DivoomDevice[]
-}
-
 export interface SendHttpGifPayload extends CommandPayload {
   Command: 'Draw/SendHttpGif'
   PicNum: number
@@ -45,24 +40,4 @@ export interface SendHttpGifPayload extends CommandPayload {
   PicID: number
   PicSpeed: number
   PicData: string
-}
-
-export class DeviceHttpError extends Error {
-  constructor(
-    message: string,
-    public readonly statusCode: number,
-  ) {
-    super(message)
-    this.name = 'DeviceHttpError'
-  }
-}
-
-export class DeviceCommandError extends Error {
-  constructor(
-    message: string,
-    public readonly errorCode: number,
-  ) {
-    super(message)
-    this.name = 'DeviceCommandError'
-  }
 }

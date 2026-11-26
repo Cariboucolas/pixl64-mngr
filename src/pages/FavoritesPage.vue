@@ -94,7 +94,7 @@ const cancelRemove = () => {
 }
 
 const sendToDevice = async (fav: Favorite) => {
-  const client = deviceStore.getClient()
+  const client = deviceStore.getLink()
   if (!client) return
 
   sendingId.value = fav.id

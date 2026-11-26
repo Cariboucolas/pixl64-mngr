@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { DivoomClient } from '../services/divoom/client'
 import * as commands from '../services/divoom/commands'
-import { discoverDevices, validateDevice } from '../services/divoom/discovery'
+import { deviceErrorMessage } from '../services/divoom/deviceError'
+import { type DeviceLink, getDeviceGateway } from '../services/divoom/gateway'
 import type {
-  DeviceResponse,
+  DeviceReply,
   DeviceSettings,
   DivoomDevice,
 } from '../services/divoom/types'
@@ -22,34 +22,31 @@ export const useDeviceStore = defineStore('device', () => {
   // Tells "never searched" from "searched and found nothing": both leave the list empty.
   const hasDiscovered = ref(false)
 
-  let client: DivoomClient | null = null
+  const linkTo = (deviceIp: string): DeviceLink => ({
+    send: (payload) => getDeviceGateway().send(deviceIp, payload),
+  })
 
-  const isReady = computed(() => connected.value && client !== null)
+  const getLink = (): DeviceLink | null =>
+    connected.value ? linkTo(ip.value) : null
+
+  const isReady = computed(() => connected.value)
 
   const connect = async (deviceIp: string): Promise<void> => {
     connecting.value = true
     error.value = null
 
     try {
-      const valid = await validateDevice(deviceIp)
-      if (!valid) {
-        throw new Error(`Aucun appareil Divoom trouvé à ${deviceIp}`)
-      }
+      const settings = await linkTo(deviceIp).send<
+        DeviceReply & Partial<DeviceSettings>
+      >(commands.getDeviceSettings())
 
-      client = new DivoomClient(deviceIp)
       ip.value = deviceIp
-
-      const settings = await client.send<DeviceResponse & DeviceSettings>(
-        commands.getDeviceSettings(),
-      )
-
       brightness.value = settings.Brightness ?? 100
       screenOn.value = (settings.LightSwitch ?? 1) === 1
       connected.value = true
     } catch (e) {
-      client = null
       connected.value = false
-      error.value = e instanceof Error ? e.message : 'Erreur de connexion'
+      error.value = deviceErrorMessage(e)
       throw e
     } finally {
       connecting.value = false
@@ -57,28 +54,30 @@ export const useDeviceStore = defineStore('device', () => {
   }
 
   const disconnect = (): void => {
-    client = null
     connected.value = false
     ip.value = ''
     error.value = null
   }
 
   const setBrightness = async (value: number): Promise<void> => {
-    if (!client) return
-    await client.send(commands.setBrightness(value))
+    const link = getLink()
+    if (!link) return
+    await link.send(commands.setBrightness(value))
     brightness.value = value
   }
 
   const setChannel = async (index: number): Promise<void> => {
-    if (!client) return
-    await client.send(commands.setChannel(index))
+    const link = getLink()
+    if (!link) return
+    await link.send(commands.setChannel(index))
     channel.value = index
   }
 
   const togglePower = async (): Promise<void> => {
-    if (!client) return
+    const link = getLink()
+    if (!link) return
     const newState = !screenOn.value
-    await client.send(commands.powerOnOff(newState))
+    await link.send(commands.powerOnOff(newState))
     screenOn.value = newState
   }
 
@@ -87,17 +86,15 @@ export const useDeviceStore = defineStore('device', () => {
     hasDiscovered.value = false
     error.value = null
     try {
-      discoveredDevices.value = await discoverDevices()
+      discoveredDevices.value = await getDeviceGateway().discover()
       hasDiscovered.value = true
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Erreur de découverte'
+      error.value = deviceErrorMessage(e)
       discoveredDevices.value = []
     } finally {
       discovering.value = false
     }
   }
-
-  const getClient = (): DivoomClient | null => client
 
   return {
     ip,
@@ -117,6 +114,6 @@ export const useDeviceStore = defineStore('device', () => {
     setChannel,
     togglePower,
     discover,
-    getClient,
+    getLink,
   }
 })
