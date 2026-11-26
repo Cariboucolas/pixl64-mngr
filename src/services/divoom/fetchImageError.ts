@@ -31,7 +31,7 @@ const t = (key: string, params?: Record<string, unknown>): string =>
 export const fetchImageErrorMessage = (e: unknown): string => {
   if (!isFetchImageError(e)) {
     if (e instanceof Error) return e.message
-    return t('send.errorLoading')
+    return t('new.errorLoading')
   }
 
   switch (e.kind) {

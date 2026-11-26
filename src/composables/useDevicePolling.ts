@@ -9,7 +9,7 @@ export const useDevicePolling = (intervalMs: number = 10000) => {
   const start = () => {
     stop()
     timer = setInterval(async () => {
-      const client = store.getClient()
+      const client = store.getLink()
       if (!client) return
 
       try {

@@ -1,44 +1,39 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useDeviceStore } from '../stores/device.ts'
+import { useDeviceStore } from '../stores/device'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    {
-      path: '/',
-      meta: { requiresDevice: true },
-      name: 'dashboard',
-      component: () => import('../pages/DashboardPage.vue'),
-    },
     {
       path: '/connect',
       name: 'connect',
       component: () => import('../pages/ConnectionPage.vue'),
     },
     {
-      path: '/controls',
+      path: '/',
       meta: { requiresDevice: true },
-      name: 'controls',
-      component: () => import('../pages/ControlPage.vue'),
-    },
-    {
-      path: '/send',
-      meta: { requiresDevice: true },
-      name: 'send',
-      component: () => import('../pages/SendImagePage.vue'),
-    },
-    {
-      path: '/favorites',
-      meta: { requiresDevice: true },
-      name: 'favorites',
-      component: () => import('../pages/FavoritesPage.vue'),
+      component: () => import('../pages/WorkspacePage.vue'),
+      redirect: { name: 'library' },
+      children: [
+        {
+          path: 'library',
+          name: 'library',
+          component: () => import('../pages/LibraryPage.vue'),
+        },
+        {
+          path: 'new',
+          name: 'new',
+          component: () => import('../pages/NewPage.vue'),
+        },
+      ],
     },
   ],
 })
 
 router.beforeEach((to) => {
   const deviceStore = useDeviceStore()
-  if (!deviceStore.connected && to.meta.requiresDevice) {
+  const requiresDevice = to.matched.some((route) => route.meta.requiresDevice)
+  if (requiresDevice && !deviceStore.connected) {
     return { name: 'connect' }
   }
 })
