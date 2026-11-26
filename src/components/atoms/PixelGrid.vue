@@ -49,6 +49,9 @@ onMounted(paint)
 <style scoped>
 .pixel-grid {
   display: block;
+  /* The border must sit outside the drawing: any scaling of the canvas makes grid lines uneven. */
+  box-sizing: content-box;
+  flex: none;
   background-color: #000;
   border: 1px solid var(--color-rule);
   image-rendering: pixelated;
