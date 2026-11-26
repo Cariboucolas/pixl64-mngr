@@ -13,6 +13,8 @@ const REQUEST_TIMEOUT: Duration = Duration::from_secs(5);
 /// Pause kept between two commands to the device. Divoom documents no rate limit;
 /// this value comes from community observations (docs/reference/divoom-api.md).
 const MIN_COMMAND_INTERVAL: Duration = Duration::from_millis(35);
+/// Largest reply read from the device or the discovery service; real ones are a few hundred bytes.
+const MAX_REPLY_BYTES: usize = 64 * 1024;
 const DISCOVERY_URL: &str = "https://app.divoom-gz.com/Device/ReturnSameLANDevice";
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -99,6 +101,8 @@ impl DeviceClient {
     pub fn new() -> Result<Self, DeviceError> {
         let http = reqwest::Client::builder()
             .timeout(REQUEST_TIMEOUT)
+            // A redirect would lead away from the address that was validated.
+            .redirect(reqwest::redirect::Policy::none())
             .build()
             .map_err(unreachable)?;
         Ok(Self {
@@ -129,7 +133,7 @@ impl DeviceClient {
     }
 
     async fn post_json(&self, url: &str, body: String) -> Result<String, DeviceError> {
-        let response = self
+        let mut response = self
             .http
             .post(url)
             .header(reqwest::header::CONTENT_TYPE, "application/json")
@@ -142,7 +146,14 @@ impl DeviceClient {
                 status: response.status().as_u16(),
             });
         }
-        response.text().await.map_err(unreachable)
+        let mut reply = Vec::new();
+        while let Some(chunk) = response.chunk().await.map_err(unreachable)? {
+            if reply.len() + chunk.len() > MAX_REPLY_BYTES {
+                return Err(DeviceError::InvalidResponse);
+            }
+            reply.extend_from_slice(&chunk);
+        }
+        String::from_utf8(reply).map_err(|_| DeviceError::InvalidResponse)
     }
 }
 
@@ -155,6 +166,45 @@ fn unreachable(error: reqwest::Error) -> DeviceError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::{Read, Write};
+    use std::net::TcpListener;
+
+    /// Serves one canned HTTP response on a local port and returns its URL.
+    fn serve_once(response: String) -> String {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let url = format!("http://{}/post", listener.local_addr().unwrap());
+        std::thread::spawn(move || {
+            if let Ok((mut stream, _)) = listener.accept() {
+                let _ = stream.read(&mut [0; 2048]);
+                let _ = stream.write_all(response.as_bytes());
+            }
+        });
+        url
+    }
+
+    fn post(url: &str) -> Result<String, DeviceError> {
+        let client = DeviceClient::new().unwrap();
+        tauri::async_runtime::block_on(client.post_json(url, "{}".into()))
+    }
+
+    #[test]
+    fn does_not_follow_a_redirect() {
+        let elsewhere = serve_once("HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}".into());
+        let url = serve_once(format!(
+            "HTTP/1.1 302 Found\r\nLocation: {elsewhere}\r\nContent-Length: 0\r\n\r\n"
+        ));
+        assert_eq!(post(&url), Err(DeviceError::HttpStatus { status: 302 }));
+    }
+
+    #[test]
+    fn refuses_an_oversized_reply() {
+        let body = "x".repeat(MAX_REPLY_BYTES + 1);
+        let url = serve_once(format!(
+            "HTTP/1.1 200 OK\r\nContent-Length: {}\r\n\r\n{body}",
+            body.len()
+        ));
+        assert_eq!(post(&url), Err(DeviceError::InvalidResponse));
+    }
 
     #[test]
     fn accepts_a_private_ipv4_address() {
