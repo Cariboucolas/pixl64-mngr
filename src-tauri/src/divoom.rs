@@ -158,9 +158,23 @@ impl DeviceClient {
 }
 
 fn unreachable(error: reqwest::Error) -> DeviceError {
-    DeviceError::Unreachable {
-        message: error.to_string(),
+    let message = error_chain(&error);
+    // The interface shows a plain sentence; the cause is only readable here.
+    eprintln!("[divoom] exchange failed: {message}");
+    DeviceError::Unreachable { message }
+}
+
+/// An error and everything that caused it: the top-level text of an HTTP
+/// error names the URL but not why the exchange failed.
+fn error_chain(error: &dyn std::error::Error) -> String {
+    let mut description = error.to_string();
+    let mut cause = error.source();
+    while let Some(error) = cause {
+        description.push_str(": ");
+        description.push_str(&error.to_string());
+        cause = error.source();
     }
+    description
 }
 
 #[cfg(test)]
@@ -185,6 +199,35 @@ mod tests {
     fn post(url: &str) -> Result<String, DeviceError> {
         let client = DeviceClient::new().unwrap();
         tauri::async_runtime::block_on(client.post_json(url, "{}".into()))
+    }
+
+    #[test]
+    fn describes_an_error_with_its_causes() {
+        #[derive(Debug)]
+        struct Layer(&'static str, Option<Box<Layer>>);
+        impl std::fmt::Display for Layer {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                f.write_str(self.0)
+            }
+        }
+        impl std::error::Error for Layer {
+            fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+                self.1.as_deref().map(|cause| cause as _)
+            }
+        }
+        let error = Layer(
+            "error sending request",
+            Some(Box::new(Layer(
+                "tcp connect error",
+                Some(Box::new(Layer("No route to host (os error 65)", None))),
+            ))),
+        );
+
+        assert_eq!(
+            error_chain(&error),
+            "error sending request: tcp connect error: No route to host (os error 65)"
+        );
+        assert_eq!(error_chain(&Layer("alone", None)), "alone");
     }
 
     #[test]
