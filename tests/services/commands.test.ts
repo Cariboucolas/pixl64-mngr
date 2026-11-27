@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   clearHttpText,
+  getChannel,
   getDeviceSettings,
   powerOnOff,
   resetHttpGifId,
@@ -9,6 +10,8 @@ import {
   setChannel,
   setMirror,
   setRotation,
+  setTime24,
+  setWhiteBalance,
 } from '../../src/services/divoom/commands'
 
 describe('commands', () => {
@@ -106,6 +109,38 @@ describe('commands', () => {
     expect(setMirror(false)).toEqual({
       Command: 'Device/SetMirrorMode',
       Mode: 0,
+    })
+  })
+
+  it('getChannel asks for the current channel', () => {
+    expect(getChannel()).toEqual({ Command: 'Channel/GetIndex' })
+  })
+
+  it('setTime24 maps the clock format to the mode', () => {
+    expect(setTime24(true)).toEqual({
+      Command: 'Device/SetTime24Flag',
+      Mode: 1,
+    })
+    expect(setTime24(false)).toEqual({
+      Command: 'Device/SetTime24Flag',
+      Mode: 0,
+    })
+  })
+
+  it('setWhiteBalance sends the three channels', () => {
+    expect(setWhiteBalance({ r: 100, g: 80, b: 60 })).toEqual({
+      Command: 'Device/SetWhiteBalance',
+      RValue: 100,
+      GValue: 80,
+      BValue: 60,
+    })
+  })
+
+  it('setWhiteBalance clamps each channel to 0-100', () => {
+    expect(setWhiteBalance({ r: 140, g: -5, b: 50 })).toMatchObject({
+      RValue: 100,
+      GValue: 0,
+      BValue: 50,
     })
   })
 })

@@ -41,3 +41,14 @@ export interface SendHttpGifPayload extends CommandPayload {
   PicSpeed: number
   PicData: string
 }
+
+/** Screen rotation in degrees; the position in this list is the device's `Mode` and `GyrateAngle`. */
+export const ROTATION_ANGLES = [0, 90, 180, 270] as const
+export type RotationAngle = (typeof ROTATION_ANGLES)[number]
+
+/** Share of each colour, 0 to 100. The device cannot be asked for its current value. */
+export interface WhiteBalance {
+  r: number
+  g: number
+  b: number
+}

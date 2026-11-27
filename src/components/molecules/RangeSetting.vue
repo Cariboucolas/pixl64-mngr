@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { onBeforeUnmount, ref, useId, watch } from 'vue'
 
-const { t } = useI18n()
+/** While the handle moves, the value is sent at most this often. */
+const SEND_DELAY_MS = 200
 
 const props = defineProps<{
+  label: string
+  /** A share from 0 to 100. */
   modelValue: number
   disabled: boolean
 }>()
@@ -13,34 +15,39 @@ const emit = defineEmits<{
   'update:modelValue': [value: number]
 }>()
 
+const id = useId()
 const localValue = ref(props.modelValue)
-let debounceTimer: ReturnType<typeof setTimeout> | null = null
+let sendTimer: ReturnType<typeof setTimeout> | null = null
 
 watch(
   () => props.modelValue,
-  (v) => {
-    localValue.value = v
+  (value) => {
+    localValue.value = value
   },
 )
 
 const onInput = (event: Event) => {
   const value = Number((event.target as HTMLInputElement).value)
   localValue.value = value
-  if (debounceTimer) clearTimeout(debounceTimer)
-  debounceTimer = setTimeout(() => {
+  if (sendTimer) clearTimeout(sendTimer)
+  sendTimer = setTimeout(() => {
     emit('update:modelValue', value)
-  }, 200)
+  }, SEND_DELAY_MS)
 }
+
+onBeforeUnmount(() => {
+  if (sendTimer) clearTimeout(sendTimer)
+})
 </script>
 
 <template>
-  <div class="brightness-slider">
-    <label for="brightness">
-      {{ t('panel.brightness') }}
+  <div class="range-setting">
+    <label :for="id">
+      {{ label }}
       <span class="value">{{ localValue }}%</span>
     </label>
     <input
-      id="brightness"
+      :id="id"
       type="range"
       min="0"
       max="100"
@@ -52,13 +59,13 @@ const onInput = (event: Event) => {
 </template>
 
 <style scoped>
-.brightness-slider {
+.range-setting {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.brightness-slider label {
+label {
   display: flex;
   justify-content: space-between;
   color: var(--color-text-secondary);

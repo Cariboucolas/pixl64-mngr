@@ -1,37 +1,40 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
-
-const { t } = useI18n()
+import { useId } from 'vue'
 
 defineProps<{
+  label: string
   on: boolean
+  onLabel: string
+  offLabel: string
   disabled: boolean
 }>()
 
 defineEmits<{
   toggle: []
 }>()
+
+const id = useId()
 </script>
 
 <template>
-  <div class="power-toggle">
-    <span id="power-label" class="label">{{ t('panel.screen') }}</span>
+  <div class="toggle-setting">
+    <span :id="id" class="label">{{ label }}</span>
     <button
       type="button"
       role="switch"
-      aria-labelledby="power-label"
+      :aria-labelledby="id"
       :aria-checked="on"
       :class="{ on }"
       :disabled="disabled"
       @click="$emit('toggle')"
     >
-      {{ on ? t('panel.screenOn') : t('panel.screenOff') }}
+      {{ on ? onLabel : offLabel }}
     </button>
   </div>
 </template>
 
 <style scoped>
-.power-toggle {
+.toggle-setting {
   display: flex;
   align-items: center;
   justify-content: space-between;

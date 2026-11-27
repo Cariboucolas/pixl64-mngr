@@ -13,7 +13,10 @@ export interface SentCommand {
 export interface FakeGateway extends DeviceGateway {
   readonly sent: SentCommand[]
   replyTo(command: string, reply: DeviceReply): void
+  /** Every exchange fails with this error; `null` lets them through again. */
   failWith(error: unknown): void
+  /** Only this command fails. */
+  failOn(command: string, error: unknown): void
   discovers(devices: DivoomDevice[]): void
 }
 
@@ -22,6 +25,7 @@ export const createFakeGateway = (): FakeGateway => {
   const sent: SentCommand[] = []
   const replies = new Map<string, DeviceReply>()
   let failure: unknown = null
+  const commandFailures = new Map<string, unknown>()
   let devices: DivoomDevice[] = []
 
   return {
@@ -32,6 +36,9 @@ export const createFakeGateway = (): FakeGateway => {
     failWith: (error) => {
       failure = error
     },
+    failOn: (command, error) => {
+      commandFailures.set(command, error)
+    },
     discovers: (found) => {
       devices = found
     },
@@ -40,6 +47,9 @@ export const createFakeGateway = (): FakeGateway => {
       payload: CommandPayload,
     ) => {
       if (failure) throw failure
+      if (commandFailures.has(payload.Command)) {
+        throw commandFailures.get(payload.Command)
+      }
       sent.push({ ip, payload })
       return (replies.get(payload.Command) ?? { error_code: 0 }) as T
     },

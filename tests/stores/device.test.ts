@@ -28,6 +28,7 @@ describe('device store connection', () => {
 
     expect(gateway.sent).toEqual([
       { ip: IP, payload: { Command: 'Channel/GetAllConf' } },
+      { ip: IP, payload: { Command: 'Channel/GetIndex' } },
     ])
     expect(store.connected).toBe(true)
     expect(store.ip).toBe(IP)
@@ -94,6 +95,133 @@ describe('device store connection', () => {
   })
 })
 
+describe('device store display settings', () => {
+  it('reads the channel and the display settings at connection', async () => {
+    gateway.replyTo('Channel/GetAllConf', {
+      error_code: 0,
+      GyrateAngle: 3,
+      MirrorFlag: 1,
+      Time24Flag: 0,
+    })
+    gateway.replyTo('Channel/GetIndex', { SelectIndex: 2 })
+    const store = useDeviceStore()
+
+    await store.connect(IP)
+
+    expect(store.channel).toBe(2)
+    expect(store.rotation).toBe(270)
+    expect(store.mirrored).toBe(true)
+    expect(store.time24).toBe(false)
+  })
+
+  it('sends each display setting and keeps what the device accepted', async () => {
+    const store = useDeviceStore()
+    await store.connect(IP)
+
+    await store.setRotation(90)
+    await store.setMirror(true)
+    await store.setTime24(false)
+    await store.setWhiteBalance({ r: 100, g: 80, b: 60 })
+
+    expect(gateway.sent.slice(-4).map((s) => s.payload)).toEqual([
+      { Command: 'Device/SetScreenRotationAngle', Mode: 1 },
+      { Command: 'Device/SetMirrorMode', Mode: 1 },
+      { Command: 'Device/SetTime24Flag', Mode: 0 },
+      {
+        Command: 'Device/SetWhiteBalance',
+        RValue: 100,
+        GValue: 80,
+        BValue: 60,
+      },
+    ])
+    expect(store.rotation).toBe(90)
+    expect(store.mirrored).toBe(true)
+    expect(store.time24).toBe(false)
+    expect(store.whiteBalance).toEqual({ r: 100, g: 80, b: 60 })
+  })
+
+  it('keeps the previous state when the device refuses a command', async () => {
+    const refused = { kind: 'commandRefused', errorCode: 1 }
+    const store = useDeviceStore()
+    await store.connect(IP)
+    for (const command of [
+      'Device/SetScreenRotationAngle',
+      'Device/SetMirrorMode',
+      'Device/SetTime24Flag',
+      'Device/SetWhiteBalance',
+      'Channel/SetIndex',
+    ]) {
+      gateway.failOn(command, refused)
+    }
+
+    await expect(store.setRotation(180)).rejects.toEqual(refused)
+    await expect(store.setMirror(true)).rejects.toEqual(refused)
+    await expect(store.setTime24(false)).rejects.toEqual(refused)
+    await expect(
+      store.setWhiteBalance({ r: 10, g: 10, b: 10 }),
+    ).rejects.toEqual(refused)
+    await expect(store.setChannel(3)).rejects.toEqual(refused)
+
+    expect(store.rotation).toBe(0)
+    expect(store.mirrored).toBe(false)
+    expect(store.time24).toBe(true)
+    expect(store.whiteBalance).toEqual({ r: 100, g: 100, b: 100 })
+    expect(store.channel).toBe(0)
+  })
+})
+
+describe('device store connection loss', () => {
+  const unreachable = { kind: 'unreachable', message: 'tcp connect error' }
+
+  it('reports the connection as lost when the device stops answering', async () => {
+    const store = useDeviceStore()
+    await store.connect(IP)
+    gateway.failWith(unreachable)
+
+    await store.refresh()
+
+    expect(store.lost).toBe(true)
+    expect(store.connected).toBe(true)
+    expect(store.ip).toBe(IP)
+  })
+
+  it('recovers and reads the settings again when the device answers', async () => {
+    const store = useDeviceStore()
+    await store.connect(IP)
+    gateway.failWith(unreachable)
+    await store.refresh()
+    gateway.failWith(null)
+    gateway.replyTo('Channel/GetAllConf', { error_code: 0, Brightness: 12 })
+    gateway.replyTo('Channel/GetIndex', { SelectIndex: 1 })
+
+    await store.refresh()
+
+    expect(store.lost).toBe(false)
+    expect(store.brightness).toBe(12)
+    expect(store.channel).toBe(1)
+  })
+
+  it('checks nothing while no device is connected', async () => {
+    const store = useDeviceStore()
+
+    await store.refresh()
+
+    expect(gateway.sent).toEqual([])
+    expect(store.lost).toBe(false)
+  })
+
+  it('forgets the loss on disconnect', async () => {
+    const store = useDeviceStore()
+    await store.connect(IP)
+    gateway.failWith(unreachable)
+    await store.refresh()
+
+    store.disconnect()
+
+    expect(store.lost).toBe(false)
+  })
+})
+
 const frame = (): ImageData =>
   ({
     data: new Uint8ClampedArray([255, 0, 0, 255]),
@@ -110,7 +238,7 @@ describe('device store still image', () => {
 
     await store.sendStill(still)
 
-    expect(gateway.sent.slice(1).map((c) => c.payload.Command)).toEqual([
+    expect(gateway.sent.slice(2).map((c) => c.payload.Command)).toEqual([
       'Draw/ResetHttpGifId',
       'Draw/ClearHttpText',
       'Channel/SetIndex',

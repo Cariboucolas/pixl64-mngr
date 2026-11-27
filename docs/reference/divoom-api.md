@@ -17,8 +17,8 @@ La documentation est une application ShowDoc rendue en JavaScript. Son contenu s
 | Commande | Paramètres | Notes | Page | Code |
 |---|---|---|---|---|
 | `Device/ReturnSameLANDevice` (en ligne) | — | Renvoie `DeviceList` : `DeviceName`, `DeviceId`, `DevicePrivateIP`, `DeviceMac` | 336 | oui |
-| `Channel/GetAllConf` | — | Firmware ≥ 90104. `Brightness`, `RotationFlag`, `ClockTime`, `GalleryTime`, `SingleGalleyTime`, `PowerOnChannelId`, `GalleryShowTimeFlag`, `CurClockId`, `Time24Flag`, `TemperatureMode`, `GyrateAngle`, `MirrorFlag`, `LightSwitch` | 243 | oui |
-| `Channel/GetIndex` | — | Renvoie `SelectIndex` | 240 | non |
+| `Channel/GetAllConf` | — | Firmware ≥ 90104. `Brightness`, `RotationFlag`, `ClockTime`, `GalleryTime`, `SingleGalleyTime`, `PowerOnChannelId`, `GalleryShowTimeFlag`, `CurClockId`, `Time24Flag`, `TemperatureMode`, `GyrateAngle` (0, 1 : 90°, 2 : 180°, 3 : 270°), `MirrorFlag`, `LightSwitch`. La balance des blancs n'y figure pas | 243 | oui |
+| `Channel/GetIndex` | — | Renvoie `SelectIndex` (0 à 3 d'après la documentation), sans `error_code` | 240 | oui |
 
 ## Canaux et cadrans
 
@@ -39,11 +39,11 @@ La documentation est une application ShowDoc rendue en JavaScript. Son contenu s
 |---|---|---|---|---|
 | `Channel/SetBrightness` | `Brightness` 0–100 | | 196 | oui |
 | `Channel/OnOffScreen` | `OnOff` 1 / 0 | | 223 | oui |
-| `Device/SetScreenRotationAngle` | `Mode` 0, 1 (90°), 2 (180°), 3 (270°) | Firmware > 90107 ; non conservé à l'extinction | 339 | oui, sans interface |
-| `Device/SetMirrorMode` | `Mode` 0 / 1 | Idem | 340 | oui, sans interface |
-| `Device/SetTime24Flag` | `Mode` 1 (24 h) / 0 (12 h) | Idem | 341 | non |
+| `Device/SetScreenRotationAngle` | `Mode` 0, 1 (90°), 2 (180°), 3 (270°) | Firmware > 90107 ; non conservé à l'extinction | 339 | oui |
+| `Device/SetMirrorMode` | `Mode` 0 / 1 | Idem | 340 | oui |
+| `Device/SetTime24Flag` | `Mode` 1 (24 h) / 0 (12 h) | Idem | 341 | oui |
 | `Device/SetHighLightMode` | `Mode` 0 / 1 | Idem | 342 | non |
-| `Device/SetWhiteBalance` | `RValue`, `GValue`, `BValue` 0–100 | Idem | 343 | non |
+| `Device/SetWhiteBalance` | `RValue`, `GValue`, `BValue` 0–100 | Idem | 343 | oui |
 | `Sys/TimeZone` | `TimeZoneValue` (ex. `GMT-5`) | | 221 | non |
 | `Device/SetUTC` | `Utc` (secondes) | | 222 | non |
 
