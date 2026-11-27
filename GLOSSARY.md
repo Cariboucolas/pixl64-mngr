@@ -23,6 +23,9 @@ Le mot de gauche est celui de l'interface et de la documentation ; l'identifiant
 | Texte défilant | `scrolling text` | Ligne de texte superposée par l'appareil à l'image affichée. |
 | Outil | `tool` | Fonction intégrée de l'appareil : minuteur, chronomètre, tableau de score, sonomètre, buzzer. |
 | Panneau appareil | `device panel` | Zone permanente de l'interface : aperçu, état de la connexion et réglages de l'appareil. |
+| Affichage | `display settings` | Réglages de l'écran que l'appareil oublie à l'extinction : rotation, miroir, format de l'heure, balance des blancs. |
+| Balance des blancs | `white balance` | Part de rouge, de vert et de bleu, de 0 à 100 chacune. L'appareil ne permet pas de la relire. |
+| Perte de connexion | `lost` | L'appareil connecté ne répond plus ; il reste l'appareil choisi et l'application le réinterroge jusqu'à son retour. |
 
 ## Mots à éviter
 

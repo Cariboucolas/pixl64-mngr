@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Without this text macOS cannot ask the user and silently drops every connection to the device. -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Pixl64 Mngr talks to your Pixoo-64 over the local network to read its settings and send images.</string>
+</dict>
+</plist>

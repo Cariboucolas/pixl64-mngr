@@ -1,8 +1,16 @@
-import type { CommandPayload, SendHttpGifPayload } from './types'
+import type {
+  CommandPayload,
+  RotationAngle,
+  SendHttpGifPayload,
+  WhiteBalance,
+} from './types'
+import { ROTATION_ANGLES } from './types'
+
+const percent = (value: number): number => Math.max(0, Math.min(100, value))
 
 export const setBrightness = (value: number): CommandPayload => ({
   Command: 'Channel/SetBrightness',
-  Brightness: Math.max(0, Math.min(100, value)),
+  Brightness: percent(value),
 })
 
 export const powerOnOff = (on: boolean): CommandPayload => ({
@@ -13,6 +21,10 @@ export const powerOnOff = (on: boolean): CommandPayload => ({
 export const setChannel = (index: number): CommandPayload => ({
   Command: 'Channel/SetIndex',
   SelectIndex: index,
+})
+
+export const getChannel = (): CommandPayload => ({
+  Command: 'Channel/GetIndex',
 })
 
 export const getDeviceSettings = (): CommandPayload => ({
@@ -44,12 +56,24 @@ export const sendHttpGif = (
   PicData: picData,
 })
 
-export const setRotation = (angle: 0 | 90 | 180 | 270): CommandPayload => ({
+export const setRotation = (angle: RotationAngle): CommandPayload => ({
   Command: 'Device/SetScreenRotationAngle',
-  Mode: angle === 0 ? 0 : angle === 90 ? 1 : angle === 180 ? 2 : 3,
+  Mode: ROTATION_ANGLES.indexOf(angle),
 })
 
 export const setMirror = (on: boolean): CommandPayload => ({
   Command: 'Device/SetMirrorMode',
   Mode: on ? 1 : 0,
+})
+
+export const setTime24 = (on: boolean): CommandPayload => ({
+  Command: 'Device/SetTime24Flag',
+  Mode: on ? 1 : 0,
+})
+
+export const setWhiteBalance = ({ r, g, b }: WhiteBalance): CommandPayload => ({
+  Command: 'Device/SetWhiteBalance',
+  RValue: percent(r),
+  GValue: percent(g),
+  BValue: percent(b),
 })
