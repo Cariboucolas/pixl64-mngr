@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import {
   GRID_SIZE,
   paintPixelGrid,
@@ -18,9 +18,17 @@ const props = withDefaults(
 )
 
 const canvasRef = ref<HTMLCanvasElement>()
-const metrics = computed(() =>
-  pixelGridMetrics(props.cell, window.devicePixelRatio || 1),
-)
+const pixelRatio = ref(window.devicePixelRatio || 1)
+const metrics = computed(() => pixelGridMetrics(props.cell, pixelRatio.value))
+
+/** The window can move to a screen of another density: the query stops matching and is set up again. */
+let densityQuery: MediaQueryList | null = null
+const followDensity = () => {
+  pixelRatio.value = window.devicePixelRatio || 1
+  densityQuery?.removeEventListener('change', followDensity)
+  densityQuery = window.matchMedia?.(`(resolution: ${pixelRatio.value}dppx)`)
+  densityQuery?.addEventListener('change', followDensity)
+}
 const displaySize = computed(() => `${GRID_SIZE * props.cell}px`)
 
 const paint = () => {
@@ -33,7 +41,13 @@ const paint = () => {
 }
 
 watch([() => props.frame, metrics], paint)
-onMounted(paint)
+onMounted(() => {
+  followDensity()
+  paint()
+})
+onBeforeUnmount(() => {
+  densityQuery?.removeEventListener('change', followDensity)
+})
 </script>
 
 <template>
