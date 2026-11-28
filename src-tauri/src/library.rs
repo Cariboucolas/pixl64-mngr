@@ -263,7 +263,7 @@ impl Library {
 
     fn write_index(&self, mut items: Vec<LibraryItem>) -> Result<(), LibraryError> {
         // Stable: items of the same date keep the order they were added in.
-        items.sort_by(|a, b| b.created_at.cmp(&a.created_at));
+        items.sort_by_key(|item| std::cmp::Reverse(item.created_at));
         let index = Index {
             version: FORMAT_VERSION,
             items,
