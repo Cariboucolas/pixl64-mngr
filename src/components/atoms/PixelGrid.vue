@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import type { Frame } from '../../services/divoom/sequence'
 import {
   GRID_SIZE,
   paintPixelGrid,
@@ -9,7 +10,7 @@ import {
 const props = withDefaults(
   defineProps<{
     /** The frame to show; without one, the screen is drawn unlit. */
-    frame: ImageData | null
+    frame: Frame | null
     /** Width of one device pixel on screen, in CSS pixels. */
     cell?: number
     label: string

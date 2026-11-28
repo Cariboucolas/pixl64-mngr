@@ -72,15 +72,24 @@
     "cropHint": "Glissez pour déplacer, molette pour zoomer.",
     "previewLabel": "Aperçu de l'image recadrée",
     "send": "Envoyer à l'appareil",
-    "sending": "Envoi…",
     "sent": "Image envoyée.",
     "labelTitle": "Libellé dans la bibliothèque (facultatif)",
     "labelPlaceholder": "Ex. : Logo Halo",
     "save": "Enregistrer dans la bibliothèque",
     "noThanks": "Non merci",
     "saved": "Enregistré dans la bibliothèque.",
-    "invalidImage": "Le fichier n'est pas une image valide",
-    "errorLoading": "Erreur lors du chargement de l'image"
+    "errorLoading": "Erreur lors du chargement de l'image",
+    "frameCount": "{count} images",
+    "reduced": "La source compte {from} images : {to} sont gardées, à intervalles réguliers, pour la même durée totale.",
+    "frameDuration": "Durée d'une image (ms)",
+    "progress": "Envoi… {sent}/{total}",
+    "cancelSend": "Annuler l'envoi",
+    "opening": "Ouverture de la source…",
+    "animationSent": "Animation envoyée.",
+    "directPlay": "Lecture directe",
+    "directPlayHint": "L'appareil télécharge lui-même ce GIF et le joue tel quel : sans recadrage, sans limite de 59 images, sans aperçu.",
+    "directPlayChecking": "Vérification…",
+    "directPlaySent": "L'appareil télécharge le GIF."
   },
   "library": {
     "searchPlaceholder": "Rechercher…",
@@ -94,7 +103,11 @@
     "deleteConfirmUnlabelled": "Cet élément sera supprimé définitivement.",
     "sendAriaLabel": "Envoyer à l'appareil",
     "sendErrorAriaLabel": "Échec de l'envoi : {message}",
-    "removeAriaLabel": "Supprimer de la bibliothèque"
+    "removeAriaLabel": "Supprimer de la bibliothèque",
+    "animation": "Animation",
+    "animationBadge": "anim",
+    "migrated": "{migrated} favoris repris dans la bibliothèque.",
+    "migratedWithFailures": "{migrated} favoris repris dans la bibliothèque ; {failed} illisibles sont restés dans l'ancien fichier."
   },
   "errors": {
     "url": {
@@ -115,7 +128,6 @@
       "tooLarge": "L'image est trop volumineuse : {actualMb} MB (maximum : {maxMb} MB)."
     },
     "image": {
-      "dimensionTooLarge": "L'image dépasse les dimensions maximales de {max}x{max}px",
       "loadFailed": "Impossible de charger l'image"
     },
     "device": {
@@ -127,6 +139,30 @@
       "commandRefused": "L'appareil a refusé la commande (code {errorCode})",
       "unknown": "Échec de l'échange avec l'appareil",
       "notConnected": "Aucun appareil connecté"
+    },
+    "send": {
+      "cancelled": "Envoi annulé",
+      "frameCount": "Une animation compte de 1 à {max} images"
+    },
+    "source": {
+      "unsupported": "Format non pris en charge : choisissez un fichier GIF, PNG, JPEG ou WebP",
+      "invalid": "Le fichier est abîmé ou incomplet",
+      "dimensionTooLarge": "La source dépasse 10 000 pixels de côté",
+      "fileTooLarge": "Le fichier dépasse 20 Mo",
+      "tooManyFrames": "La source compte plus de 2 000 images",
+      "noSource": "Aucune source ouverte : importez-la de nouveau"
+    },
+    "library": {
+      "io": "Le disque a refusé la lecture ou l'écriture de la bibliothèque",
+      "corrupt": "La bibliothèque est abîmée : son contenu n'est pas lisible",
+      "notFound": "Cet élément n'est plus dans la bibliothèque",
+      "invalidFrames": "Cet élément ne peut pas être enregistré : il doit compter de 1 à 59 images de 64 × 64"
+    },
+    "directPlay": {
+      "unsupportedScheme": "La lecture directe n'accepte que les URL http:// et https://",
+      "tooManyRedirects": "Trop de redirections avant d'atteindre le fichier",
+      "notGif": "L'URL ne pointe pas vers un fichier GIF",
+      "wrongSize": "Ce GIF fait {width} × {height} pixels : l'appareil ne lit que 16 × 16, 32 × 32 ou 64 × 64"
     }
   }
 }

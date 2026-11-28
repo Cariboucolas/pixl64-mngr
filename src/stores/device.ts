@@ -4,7 +4,12 @@ import { i18n } from '../i18n'
 import * as commands from '../services/divoom/commands'
 import { deviceErrorMessage } from '../services/divoom/deviceError'
 import { type DeviceLink, getDeviceGateway } from '../services/divoom/gateway'
-import { STILL_CHANNEL, sendStaticImage } from '../services/divoom/image'
+import {
+  SEND_CHANNEL,
+  type SendOptions,
+  type Sequence,
+  sendSequence,
+} from '../services/divoom/sequence'
 import {
   type DeviceReply,
   type DeviceSettings,
@@ -37,8 +42,8 @@ export const useDeviceStore = defineStore('device', () => {
   const discovering = ref(false)
   // Tells "never searched" from "searched and found nothing": both leave the list empty.
   const hasDiscovered = ref(false)
-  /** The last frame sent: the app cannot read what the device shows. */
-  const lastFrame = shallowRef<ImageData | null>(null)
+  /** The last sequence sent: the app cannot read what the device shows. */
+  const shown = shallowRef<Sequence | null>(null)
 
   const linkTo = (deviceIp: string): DeviceLink => ({
     send: (payload) => getDeviceGateway().send(deviceIp, payload),
@@ -89,7 +94,7 @@ export const useDeviceStore = defineStore('device', () => {
   const disconnect = (): void => {
     connected.value = false
     ip.value = ''
-    lastFrame.value = null
+    shown.value = null
     error.value = null
     lost.value = false
   }
@@ -159,12 +164,23 @@ export const useDeviceStore = defineStore('device', () => {
     whiteBalance.value = balance
   }
 
-  const sendStill = async (frame: ImageData): Promise<void> => {
+  const send = async (
+    sequence: Sequence,
+    options?: SendOptions,
+  ): Promise<void> => {
     const link = getLink()
     if (!link) throw new Error(i18n.global.t('errors.device.notConnected'))
-    await sendStaticImage(link, frame)
-    channel.value = STILL_CHANNEL
-    lastFrame.value = frame
+    await sendSequence(link, sequence, options)
+    channel.value = SEND_CHANNEL
+    shown.value = sequence
+  }
+
+  /** Direct play: the device downloads the GIF itself, so there is nothing to preview (ADR-0009). */
+  const playUrl = async (url: string): Promise<void> => {
+    const link = getLink()
+    if (!link) throw new Error(i18n.global.t('errors.device.notConnected'))
+    await link.send(commands.playGifUrl(url))
+    shown.value = null
   }
 
   const discover = async (): Promise<void> => {
@@ -198,7 +214,7 @@ export const useDeviceStore = defineStore('device', () => {
     discoveredDevices,
     discovering,
     hasDiscovered,
-    lastFrame,
+    shown,
     isReady,
     connect,
     disconnect,
@@ -210,7 +226,8 @@ export const useDeviceStore = defineStore('device', () => {
     setTime24,
     setWhiteBalance,
     refresh,
-    sendStill,
+    send,
+    playUrl,
     discover,
     getLink,
   }

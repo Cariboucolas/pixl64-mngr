@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { Sequence } from '../../services/divoom/sequence'
 import {
   ROTATION_ANGLES,
   type RotationAngle,
   type WhiteBalance,
 } from '../../services/divoom/types'
-import PixelGrid from '../atoms/PixelGrid.vue'
 import StatusDot from '../atoms/StatusDot.vue'
+import AnimatedPixelGrid from '../molecules/AnimatedPixelGrid.vue'
 import LocaleToggle from '../molecules/LocaleToggle.vue'
 import RangeSetting from '../molecules/RangeSetting.vue'
 import SelectSetting from '../molecules/SelectSetting.vue'
@@ -24,7 +25,8 @@ const HOURS_12 = 0
 const PREVIEW_CELL = 3
 
 const props = defineProps<{
-  frame: ImageData | null
+  /** The last sequence sent from this application. */
+  shown: Sequence | null
   deviceName: string | null
   ip: string
   /** The device stopped answering: its settings cannot be changed until it is back. */
@@ -86,8 +88,12 @@ const setWhiteBalanceChannel = (key: keyof WhiteBalance, value: number) => {
 
 <template>
   <aside class="device-panel" :aria-label="t('panel.title')">
-    <PixelGrid :frame="frame" :cell="PREVIEW_CELL" :label="t('panel.preview')" />
-    <p v-if="!frame" class="hint">{{ t('panel.noFrame') }}</p>
+    <AnimatedPixelGrid
+      :sequence="shown"
+      :cell="PREVIEW_CELL"
+      :label="t('panel.preview')"
+    />
+    <p v-if="!shown" class="hint">{{ t('panel.noFrame') }}</p>
 
     <div class="identity">
       <StatusDot :on="!lost" />

@@ -3,21 +3,24 @@ export type CardState = 'idle' | 'sending' | 'sent' | 'error' | 'disabled'
 </script>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AlertIcon from '../../assets/icons/alert.svg?component'
 import CheckIcon from '../../assets/icons/check.svg?component'
 import LoaderIcon from '../../assets/icons/loader.svg?component'
 import SendIcon from '../../assets/icons/send.svg?component'
 import TrashIcon from '../../assets/icons/trash.svg?component'
-import PixelGrid from '../atoms/PixelGrid.vue'
+import type { Sequence } from '../../services/divoom/sequence'
+import AnimatedPixelGrid from './AnimatedPixelGrid.vue'
 
 const { t } = useI18n()
 
 defineProps<{
   id: string
   label?: string
-  /** The decoded still; null while it is being decoded. */
-  frame: ImageData | null
+  /** What the thumbnail shows; null while it is being read. */
+  sequence: Sequence | null
+  animated: boolean
   /** Width of one device pixel on screen, in CSS pixels. */
   cell: number
   state: CardState
@@ -27,16 +30,32 @@ defineProps<{
 defineEmits<{
   send: [id: string]
   remove: [id: string]
+  /** The pointer or the focus is on the card: an animation wants its frames to play. */
+  preview: [id: string]
 }>()
+
+const hovered = ref(false)
 </script>
 
 <template>
-  <article class="library-item">
-    <PixelGrid
-      :frame="frame"
-      :cell="cell"
-      :label="label ?? t('library.unlabelled')"
-    />
+  <article
+    class="library-item"
+    @mouseenter="hovered = true; $emit('preview', id)"
+    @mouseleave="hovered = false"
+    @focusin="hovered = true; $emit('preview', id)"
+    @focusout="hovered = false"
+  >
+    <div class="thumbnail">
+      <AnimatedPixelGrid
+        :sequence="sequence"
+        :cell="cell"
+        :label="label ?? t('library.unlabelled')"
+        :playing="hovered"
+      />
+      <span v-if="animated" class="badge" :title="t('library.animation')">
+        {{ t('library.animationBadge') }}
+      </span>
+    </div>
     <div class="footer">
       <h3 class="label" :title="label">{{ label ?? t('library.unlabelled') }}</h3>
       <div class="actions">
@@ -73,6 +92,21 @@ defineEmits<{
 </template>
 
 <style scoped>
+.thumbnail {
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-1);
+  padding: 0 var(--space-1);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-rule);
+  color: var(--color-accent);
+  font-size: var(--text-xs);
+}
+
 .library-item {
   display: flex;
   flex-direction: column;

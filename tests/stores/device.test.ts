@@ -2,6 +2,7 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { setDeviceGateway } from '../../src/services/divoom/gateway'
+import { SendCancelled, still } from '../../src/services/divoom/sequence'
 import type { DivoomDevice } from '../../src/services/divoom/types'
 import { useDeviceStore } from '../../src/stores/device'
 import { createFakeGateway, type FakeGateway } from '../doubles/fakeGateway'
@@ -230,13 +231,13 @@ const frame = (): ImageData =>
     colorSpace: 'srgb',
   }) as ImageData
 
-describe('device store still image', () => {
-  it('sends a still and remembers it as what the device shows', async () => {
+describe('device store sending', () => {
+  it('sends a sequence and remembers it as what the device shows', async () => {
     const store = useDeviceStore()
     await store.connect(IP)
-    const still = frame()
+    const sequence = still(frame())
 
-    await store.sendStill(still)
+    await store.send(sequence)
 
     expect(gateway.sent.slice(2).map((c) => c.payload.Command)).toEqual([
       'Draw/ResetHttpGifId',
@@ -249,38 +250,86 @@ describe('device store still image', () => {
       PicWidth: 1,
       PicData: '/wAA',
     })
-    expect(store.lastFrame).toStrictEqual(still)
+    expect(store.shown).toStrictEqual(sequence)
+    expect(store.channel).toBe(4)
   })
 
-  it('keeps the previous frame when the send fails', async () => {
+  it('keeps what was shown when the send fails', async () => {
     const store = useDeviceStore()
     await store.connect(IP)
     gateway.failWith({ kind: 'commandRefused', errorCode: 3 })
 
-    await expect(store.sendStill(frame())).rejects.toEqual({
+    await expect(store.send(still(frame()))).rejects.toEqual({
       kind: 'commandRefused',
       errorCode: 3,
     })
 
-    expect(store.lastFrame).toBeNull()
+    expect(store.shown).toBeNull()
+  })
+
+  it('lets a new send go through after a cancelled one', async () => {
+    const store = useDeviceStore()
+    await store.connect(IP)
+    const controller = new AbortController()
+    controller.abort()
+    const sequence = still(frame())
+
+    await expect(
+      store.send(sequence, { signal: controller.signal }),
+    ).rejects.toBeInstanceOf(SendCancelled)
+    await store.send(sequence)
+
+    expect(store.shown).toStrictEqual(sequence)
   })
 
   it('refuses to send while no device is connected', async () => {
     const store = useDeviceStore()
 
-    await expect(store.sendStill(frame())).rejects.toThrow()
+    await expect(store.send(still(frame()))).rejects.toThrow()
 
     expect(gateway.sent).toEqual([])
   })
 
-  it('forgets the frame on disconnect', async () => {
+  it('forgets what was shown on disconnect', async () => {
     const store = useDeviceStore()
     await store.connect(IP)
-    await store.sendStill(frame())
+    await store.send(still(frame()))
 
     store.disconnect()
 
-    expect(store.lastFrame).toBeNull()
+    expect(store.shown).toBeNull()
+  })
+})
+
+describe('device store direct play', () => {
+  it('tells the device to play a URL and forgets the preview it cannot show', async () => {
+    const store = useDeviceStore()
+    await store.connect(IP)
+    await store.send(still(frame()))
+
+    await store.playUrl('http://f.divoom-gz.com/64_64.gif')
+
+    expect(gateway.sent.at(-1)?.payload).toEqual({
+      Command: 'Device/PlayTFGif',
+      FileType: 2,
+      FileName: 'http://f.divoom-gz.com/64_64.gif',
+    })
+    expect(store.shown).toBeNull()
+  })
+
+  it('keeps the preview when the device refuses to play the URL', async () => {
+    const store = useDeviceStore()
+    await store.connect(IP)
+    const sequence = still(frame())
+    await store.send(sequence)
+    gateway.failOn('Device/PlayTFGif', { kind: 'commandRefused', errorCode: 1 })
+
+    await expect(store.playUrl('http://example.com/a.gif')).rejects.toEqual({
+      kind: 'commandRefused',
+      errorCode: 1,
+    })
+
+    expect(store.shown).toStrictEqual(sequence)
   })
 })
 

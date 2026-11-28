@@ -1,12 +1,9 @@
 import ipaddr from 'ipaddr.js'
 import { i18n } from '../../i18n'
-import * as commands from './commands'
-import type { DeviceLink } from './gateway'
+import type { Frame } from './sequence'
 
 const t = (key: string, params?: Record<string, unknown>): string =>
   i18n.global.t(key, params ?? {})
-
-export const MAX_IMAGE_DIMENSION = 10_000
 
 export const validateImageUrl = (rawUrl: string): URL => {
   let url: URL
@@ -59,18 +56,7 @@ export const validateImageUrl = (rawUrl: string): URL => {
   return url
 }
 
-export const validateImageDimensions = (img: HTMLImageElement): void => {
-  if (
-    img.naturalWidth > MAX_IMAGE_DIMENSION ||
-    img.naturalHeight > MAX_IMAGE_DIMENSION
-  ) {
-    throw new Error(
-      t('errors.image.dimensionTooLarge', { max: MAX_IMAGE_DIMENSION }),
-    )
-  }
-}
-
-export const encodeFrame = (imageData: ImageData): string => {
+export const encodeFrame = (imageData: Frame): string => {
   const { data, width, height } = imageData
   const rgb = new Uint8Array(width * height * 3)
 
@@ -83,61 +69,12 @@ export const encodeFrame = (imageData: ImageData): string => {
   return uint8ArrayToBase64(rgb)
 }
 
-export const imageDataToDataUrl = (imageData: ImageData): string => {
-  const canvas = document.createElement('canvas')
-  canvas.width = imageData.width
-  canvas.height = imageData.height
-  const ctx = canvas.getContext('2d')
-  if (!ctx) throw new Error('Canvas 2D context unavailable')
-  ctx.putImageData(imageData, 0, 0)
-  return canvas.toDataURL('image/png')
-}
-
-export const dataUrlToImageData = (
-  dataUrl: string,
-  size: number = 64,
-): Promise<ImageData> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.onload = () => {
-      const canvas = document.createElement('canvas')
-      canvas.width = size
-      canvas.height = size
-      const ctx = canvas.getContext('2d')
-      if (!ctx) {
-        reject(new Error('Canvas 2D context unavailable'))
-        return
-      }
-      ctx.drawImage(img, 0, 0, size, size)
-      resolve(ctx.getImageData(0, 0, size, size))
-    }
-    img.onerror = () => reject(new Error(t('errors.image.loadFailed')))
-    img.src = dataUrl
-  })
-}
-
 const uint8ArrayToBase64 = (bytes: Uint8Array): string => {
   let binary = ''
   for (let i = 0; i < bytes.length; i++) {
     binary += String.fromCharCode(bytes[i])
   }
   return btoa(binary)
-}
-
-/** Channel the device is put on before a still is sent. */
-export const STILL_CHANNEL = 4
-
-export const sendStaticImage = async (
-  client: DeviceLink,
-  imageData: ImageData,
-): Promise<void> => {
-  await client.send(commands.resetHttpGifId())
-  await client.send(commands.clearHttpText())
-  await client.send(commands.setChannel(STILL_CHANNEL))
-
-  const picData = encodeFrame(imageData)
-  const payload = commands.sendHttpGif(picData, 1, 0, 1, 100, imageData.width)
-  await client.send(payload)
 }
 
 export const clampScale = (scale: number, min: number, max: number): number =>

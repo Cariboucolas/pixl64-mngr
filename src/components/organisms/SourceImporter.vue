@@ -11,7 +11,7 @@ defineProps<{
 }>()
 
 defineEmits<{
-  file: [image: HTMLImageElement]
+  file: [file: File]
   url: []
 }>()
 
@@ -20,7 +20,7 @@ const url = defineModel<string>('url', { required: true })
 
 <template>
   <div class="source-importer">
-    <FilePicker @load="$emit('file', $event)" />
+    <FilePicker @pick="$emit('file', $event)" />
     <span class="separator">{{ t('new.or') }}</span>
     <UrlForm
       v-model="url"

@@ -6,8 +6,6 @@ import {
   computeCropParams,
   encodeFrame,
   extractCrop,
-  MAX_IMAGE_DIMENSION,
-  validateImageDimensions,
   validateImageUrl,
 } from '../../src/services/divoom/image'
 
@@ -69,39 +67,6 @@ describe('clampOffset', () => {
 
   it('preserves offset when image is larger and offset within bounds', () => {
     expect(clampOffset(-100, 500, 300)).toBe(-100)
-  })
-})
-
-describe('validateImageDimensions', () => {
-  it('throws when width exceeds max', () => {
-    // Given
-    const img = {
-      naturalWidth: MAX_IMAGE_DIMENSION + 1,
-      naturalHeight: 100,
-    } as HTMLImageElement
-    // When & Then
-    expect(() => validateImageDimensions(img)).toThrow(
-      /exceeds|dimensions max/i,
-    )
-  })
-
-  it('throws when height exceeds max', () => {
-    // Given
-    const img = {
-      naturalWidth: 100,
-      naturalHeight: MAX_IMAGE_DIMENSION + 1,
-    } as HTMLImageElement
-    // When & Then
-    expect(() => validateImageDimensions(img)).toThrow(
-      /exceeds|dimensions max/i,
-    )
-  })
-
-  it('does not throw when dimensions are within bounds', () => {
-    // Given
-    const img = { naturalWidth: 1920, naturalHeight: 1080 } as HTMLImageElement
-    // When & Then
-    expect(() => validateImageDimensions(img)).not.toThrow()
   })
 })
 

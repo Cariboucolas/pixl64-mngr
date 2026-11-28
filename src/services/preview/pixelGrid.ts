@@ -1,3 +1,5 @@
+import type { Frame } from '../divoom/sequence'
+
 /** Side of the device screen, in pixels. */
 export const GRID_SIZE = 64
 
@@ -52,7 +54,7 @@ const dimmed = (colour: Rgb, opacity: number): Rgb => [
 /** Paints a frame as the device shows it: square pixels on a thin dark grid. */
 export const paintPixelGrid = (
   ctx: Painter,
-  frame: ImageData | null,
+  frame: Frame | null,
   { cell, gap, gridOpacity, size }: PixelGridMetrics,
 ): void => {
   ctx.fillStyle = GRID_COLOR

@@ -3,6 +3,7 @@ import {
   clearHttpText,
   getChannel,
   getDeviceSettings,
+  playGifUrl,
   powerOnOff,
   resetHttpGifId,
   sendHttpGif,
@@ -109,6 +110,14 @@ describe('commands', () => {
     expect(setMirror(false)).toEqual({
       Command: 'Device/SetMirrorMode',
       Mode: 0,
+    })
+  })
+
+  it('playGifUrl tells the device to download a GIF itself', () => {
+    expect(playGifUrl('http://f.divoom-gz.com/64_64.gif')).toEqual({
+      Command: 'Device/PlayTFGif',
+      FileType: 2,
+      FileName: 'http://f.divoom-gz.com/64_64.gif',
     })
   })
 

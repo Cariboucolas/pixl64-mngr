@@ -6,8 +6,8 @@ import type { CardState } from '../components/molecules/LibraryItemCard.vue'
 import LibraryGrid, {
   type LibraryGridItem,
 } from '../components/organisms/LibraryGrid.vue'
-import { deviceErrorMessage } from '../services/divoom/deviceError'
-import { dataUrlToImageData } from '../services/divoom/image'
+import { type Sequence, still } from '../services/divoom/sequence'
+import { libraryErrorMessage } from '../services/library/libraryError'
 import { useDeviceStore } from '../stores/device'
 import { type LibraryItem, useLibraryStore } from '../stores/library'
 
@@ -23,7 +23,10 @@ const sendingId = ref<string | null>(null)
 const sentIds = ref<Set<string>>(new Set())
 const errorMessages = ref<Map<string, string>>(new Map())
 const pendingDeletion = ref<LibraryItem | null>(null)
-const frames = shallowRef<Map<string, ImageData>>(new Map())
+/** What each card shows: the first frame, then every frame once an animation was hovered. */
+const sequences = shallowRef<Map<string, Sequence>>(new Map())
+/** Items whose every frame was read. */
+const complete = new Set<string>()
 
 const timeouts = new Set<ReturnType<typeof setTimeout>>()
 
@@ -39,8 +42,9 @@ const visibleItems = computed<LibraryGridItem[]>(() =>
   (query.value ? libraryStore.search(query.value) : libraryStore.items).map(
     (item) => ({
       id: item.id,
-      label: item.label,
-      frame: frames.value.get(item.id) ?? null,
+      label: item.label ?? undefined,
+      sequence: sequences.value.get(item.id) ?? null,
+      animated: item.kind === 'animation',
       state: stateOf(item.id),
       errorMessage: errorMessages.value.get(item.id),
     }),
@@ -52,21 +56,48 @@ const emptyMessage = computed(() => {
   return query.value ? t('library.noResults') : t('library.empty')
 })
 
-/** Decodes the stills that have no frame yet; one that cannot be decoded stays unlit. */
-const decodeMissingFrames = async (items: LibraryItem[]) => {
-  const missing = items.filter((item) => !frames.value.has(item.id))
-  if (!missing.length) return
-  const decoded = await Promise.allSettled(
-    missing.map((item) => dataUrlToImageData(item.dataUrl)),
-  )
-  const next = new Map(frames.value)
-  decoded.forEach((result, index) => {
-    if (result.status === 'fulfilled') next.set(missing[index].id, result.value)
-  })
-  frames.value = next
+const show = (id: string, sequence: Sequence) => {
+  sequences.value = new Map(sequences.value).set(id, sequence)
 }
 
-watch(() => libraryStore.items, decodeMissingFrames, { immediate: true })
+/** Reads the first frame of the items that have none yet; one that cannot be read stays unlit. */
+const loadMissingThumbnails = async (items: LibraryItem[]) => {
+  const missing = items.filter((item) => !sequences.value.has(item.id))
+  if (!missing.length) return
+  const read = await Promise.allSettled(
+    missing.map((item) => libraryStore.thumbnailOf(item.id)),
+  )
+  const next = new Map(sequences.value)
+  read.forEach((result, index) => {
+    if (result.status === 'fulfilled') {
+      next.set(missing[index].id, still(result.value))
+    }
+  })
+  sequences.value = next
+}
+
+/** Every frame of an item, read once. */
+const sequenceOf = async (id: string): Promise<Sequence> => {
+  const known = sequences.value.get(id)
+  if (known && complete.has(id)) return known
+  const sequence = await libraryStore.sequenceOf(id)
+  complete.add(id)
+  show(id, sequence)
+  return sequence
+}
+
+/** An animation plays under the pointer: its frames are read then. */
+const preview = async (id: string) => {
+  const item = libraryStore.items.find((candidate) => candidate.id === id)
+  if (item?.kind !== 'animation') return
+  try {
+    await sequenceOf(id)
+  } catch {
+    // The thumbnail keeps its first frame; sending will report the failure.
+  }
+}
+
+watch(() => libraryStore.items, loadMissingThumbnails, { immediate: true })
 
 const scheduleCleanup = (callback: () => void, delay: number) => {
   const timeoutId = setTimeout(() => {
@@ -108,7 +139,11 @@ const confirmRemove = async () => {
   const target = pendingDeletion.value
   if (!target) return
   pendingDeletion.value = null
-  await libraryStore.remove(target.id)
+  try {
+    await libraryStore.remove(target.id)
+  } catch (e) {
+    flashError(target.id, libraryErrorMessage(e))
+  }
 }
 
 const send = async (id: string) => {
@@ -117,19 +152,31 @@ const send = async (id: string) => {
 
   sendingId.value = id
   try {
-    const frame =
-      frames.value.get(id) ?? (await dataUrlToImageData(item.dataUrl))
-    await deviceStore.sendStill(frame)
+    await deviceStore.send(await sequenceOf(id))
     flashSent(id)
   } catch (e) {
-    flashError(id, deviceErrorMessage(e))
+    flashError(id, libraryErrorMessage(e))
   } finally {
     sendingId.value = null
   }
 }
 
-onMounted(() => {
-  libraryStore.hydrate()
+const loadError = ref<string | null>(null)
+
+const migrationNotice = computed(() => {
+  const migration = libraryStore.migration
+  if (!migration) return null
+  return migration.failed
+    ? t('library.migratedWithFailures', { ...migration })
+    : t('library.migrated', { ...migration })
+})
+
+onMounted(async () => {
+  try {
+    await libraryStore.hydrate()
+  } catch (e) {
+    loadError.value = libraryErrorMessage(e)
+  }
 })
 
 onUnmounted(() => {
@@ -139,12 +186,16 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <p v-if="migrationNotice" class="notice" role="status">{{ migrationNotice }}</p>
+  <p v-if="loadError" class="error" role="alert">{{ loadError }}</p>
+
   <LibraryGrid
     v-model:query="query"
     :items="visibleItems"
     :empty-message="emptyMessage"
     @send="send"
     @remove="askRemove"
+    @preview="preview"
   />
 
   <ConfirmDialog
@@ -162,3 +213,15 @@ onUnmounted(() => {
     @cancel="pendingDeletion = null"
   />
 </template>
+
+<style scoped>
+.notice {
+  margin-bottom: var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.error {
+  margin-bottom: var(--space-4);
+}
+</style>

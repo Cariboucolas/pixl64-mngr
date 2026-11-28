@@ -1,68 +1,74 @@
-import { load, type Store } from '@tauri-apps/plugin-store'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { encodeFrame } from '../services/divoom/image'
+import {
+  decodeFrame,
+  type Frame,
+  type Sequence,
+  STILL_DURATION_MS,
+} from '../services/divoom/sequence'
+import {
+  getLibraryGateway,
+  type LibraryItem,
+  type Migration,
+} from '../services/library/gateway'
 
-/** Kept from before the library was renamed, so saved items are still found. */
-const STORAGE_FILE = 'favorites.json'
-const STORAGE_KEY = 'favorites'
-
-export interface LibraryItem {
-  id: string
-  dataUrl: string
-  createdAt: number
-  label?: string
-  tags?: string[]
-}
+export type { LibraryItem }
 
 export const useLibraryStore = defineStore('library', () => {
   const items = ref<LibraryItem[]>([])
   const loaded = ref(false)
-
-  let store: Store | null = null
-
-  const getStore = async (): Promise<Store> => {
-    if (!store) {
-      store = await load(STORAGE_FILE, { defaults: {} })
-    }
-    return store
-  }
+  /** Set on the launch that brought the old favourites in. */
+  const migration = ref<Migration | null>(null)
 
   const hydrate = async (): Promise<void> => {
-    const store = await getStore()
-    const saved = await store.get<LibraryItem[]>(STORAGE_KEY)
-    if (saved) items.value = saved
+    const listing = await getLibraryGateway().list()
+    items.value = listing.items
+    if (listing.migration) migration.value = listing.migration
     loaded.value = true
   }
 
-  const persist = async (): Promise<void> => {
-    const store = await getStore()
-    await store.set(STORAGE_KEY, items.value)
-    await store.save()
-  }
-
-  const add = async (dataUrl: string, label?: string): Promise<void> => {
-    const item: LibraryItem = {
-      id: crypto.randomUUID(),
-      dataUrl,
-      createdAt: Date.now(),
-      label,
-    }
-    items.value.unshift(item)
-    await persist()
+  const add = async (sequence: Sequence, label?: string): Promise<void> => {
+    const saved = await getLibraryGateway().add({
+      label: label?.trim() || undefined,
+      frameDurationMs: sequence.frameDurationMs,
+      frames: sequence.frames.map(encodeFrame),
+    })
+    items.value = [saved, ...items.value]
   }
 
   const remove = async (id: string): Promise<void> => {
+    await getLibraryGateway().remove(id)
     items.value = items.value.filter((item) => item.id !== id)
-    await persist()
   }
+
+  /** Every frame of an item, with its pace: what is sent to the device. */
+  const sequenceOf = async (id: string): Promise<Sequence> => {
+    const frames = await getLibraryGateway().frames(id)
+    const item = items.value.find((candidate) => candidate.id === id)
+    return {
+      frames: frames.map(decodeFrame),
+      frameDurationMs: item?.frameDurationMs ?? STILL_DURATION_MS,
+    }
+  }
+
+  const thumbnailOf = async (id: string): Promise<Frame> =>
+    decodeFrame(await getLibraryGateway().firstFrame(id))
 
   const search = (query: string): LibraryItem[] => {
     const q = query.toLowerCase()
-    return items.value.filter(
-      (item) =>
-        item.label?.toLowerCase().includes(q) ||
-        item.tags?.some((tag) => tag.toLowerCase().includes(q)),
-    )
+    return items.value.filter((item) => item.label?.toLowerCase().includes(q))
   }
-  return { items, loaded, hydrate, add, remove, search }
+
+  return {
+    items,
+    loaded,
+    migration,
+    hydrate,
+    add,
+    remove,
+    sequenceOf,
+    thumbnailOf,
+    search,
+  }
 })
