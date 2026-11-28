@@ -4,14 +4,8 @@ use std::time::Duration;
 use serde::Serialize;
 use url::{Host, Url};
 
-const MAX_BYTES: usize = 20 * 1024 * 1024;
+pub const MAX_BYTES: usize = 20 * 1024 * 1024;
 const FETCH_TIMEOUT: Duration = Duration::from_secs(10);
-
-#[derive(Serialize)]
-pub struct ImageBytes {
-    pub bytes: Vec<u8>,
-    pub mime: String,
-}
 
 #[derive(Debug, Serialize)]
 #[serde(tag = "kind", rename_all = "camelCase")]
@@ -48,9 +42,9 @@ pub enum FetchImageError {
     },
 }
 
-#[tauri::command]
-pub async fn fetch_image_bytes(url: String) -> Result<ImageBytes, FetchImageError> {
-    let safe_url = validate_url(&url)?;
+/// Downloads the image a user-chosen URL points to, after validating the URL (ADR-0002).
+pub async fn download(url: &str) -> Result<Vec<u8>, FetchImageError> {
+    let safe_url = validate_url(url)?;
 
     let client = reqwest::Client::builder()
         .timeout(FETCH_TIMEOUT)
@@ -77,8 +71,7 @@ pub async fn fetch_image_bytes(url: String) -> Result<ImageBytes, FetchImageErro
         .headers()
         .get(reqwest::header::CONTENT_TYPE)
         .and_then(|v| v.to_str().ok())
-        .ok_or(FetchImageError::MissingContentType)?
-        .to_string();
+        .ok_or(FetchImageError::MissingContentType)?;
 
     if !mime.starts_with("image/") {
         return Err(FetchImageError::NotImage);
@@ -98,10 +91,7 @@ pub async fn fetch_image_bytes(url: String) -> Result<ImageBytes, FetchImageErro
         });
     }
 
-    Ok(ImageBytes {
-        bytes: bytes.to_vec(),
-        mime,
-    })
+    Ok(bytes.to_vec())
 }
 
 fn validate_url(raw: &str) -> Result<Url, FetchImageError> {
@@ -111,15 +101,17 @@ fn validate_url(raw: &str) -> Result<Url, FetchImageError> {
         return Err(FetchImageError::NonHttps);
     }
 
-    let host = url.host().ok_or(FetchImageError::MissingHost)?;
+    validate_public_host(&url)?;
+    Ok(url)
+}
 
-    match host {
+/// Refuses the hosts of the local machine and of the local network (ADR-0002).
+pub fn validate_public_host(url: &Url) -> Result<(), FetchImageError> {
+    match url.host().ok_or(FetchImageError::MissingHost)? {
         Host::Domain(domain) => validate_domain(domain),
         Host::Ipv4(addr) => validate_ipv4(addr),
         Host::Ipv6(addr) => validate_ipv6(addr),
-    }?;
-
-    Ok(url)
+    }
 }
 
 fn validate_domain(domain: &str) -> Result<(), FetchImageError> {
