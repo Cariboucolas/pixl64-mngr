@@ -6,6 +6,8 @@ import {
   clampScale,
   extractCrop,
 } from '../../services/divoom/image'
+import { FRAME_SIDE } from '../../services/divoom/sequence'
+import type { Crop } from '../../services/source/gateway'
 
 const { t } = useI18n()
 
@@ -13,7 +15,10 @@ const CANVAS_SIZE = 300
 const MAX_SCALE = 20
 
 const props = defineProps<{ source: HTMLImageElement | null }>()
-const emit = defineEmits<{ crop: [imageData: ImageData] }>()
+const emit = defineEmits<{
+  /** The cropped first frame, and where the source sits on the device screen. */
+  crop: [frame: ImageData, crop: Crop]
+}>()
 
 const canvasRef = ref<HTMLCanvasElement>()
 const offsetX = ref(0)
@@ -70,14 +75,23 @@ const emitCrop = () => {
   if (debounceTimer) clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
     if (!props.source) return
-    const imageData = extractCrop(
-      props.source,
-      offsetX.value * (64 / CANVAS_SIZE),
-      offsetY.value * (64 / CANVAS_SIZE),
-      scale.value * (64 / CANVAS_SIZE),
-      64,
+    const toScreen = FRAME_SIDE / CANVAS_SIZE
+    const crop: Crop = {
+      offsetX: offsetX.value * toScreen,
+      offsetY: offsetY.value * toScreen,
+      scale: scale.value * toScreen,
+    }
+    emit(
+      'crop',
+      extractCrop(
+        props.source,
+        crop.offsetX,
+        crop.offsetY,
+        crop.scale,
+        FRAME_SIDE,
+      ),
+      crop,
     )
-    emit('crop', imageData)
   }, 100)
 }
 

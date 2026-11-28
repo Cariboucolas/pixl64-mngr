@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import Grid3x3Icon from '../../assets/icons/grid-3x3.svg?component'
 import Grid5x5Icon from '../../assets/icons/grid-5x5.svg?component'
+import type { Sequence } from '../../services/divoom/sequence'
 import LibraryItemCard, {
   type CardState,
 } from '../molecules/LibraryItemCard.vue'
@@ -9,7 +10,8 @@ import LibraryItemCard, {
 export interface LibraryGridItem {
   id: string
   label?: string
-  frame: ImageData | null
+  sequence: Sequence | null
+  animated: boolean
   state: CardState
   errorMessage?: string
 }
@@ -29,6 +31,7 @@ defineProps<{
 defineEmits<{
   send: [id: string]
   remove: [id: string]
+  preview: [id: string]
 }>()
 
 const query = defineModel<string>('query', { required: true })
@@ -75,12 +78,14 @@ const cell = defineModel<number>('cell', { default: LARGE_CELL })
         :id="item.id"
         :key="item.id"
         :label="item.label"
-        :frame="item.frame"
+        :sequence="item.sequence"
+        :animated="item.animated"
         :cell="cell"
         :state="item.state"
         :error-message="item.errorMessage"
         @send="$emit('send', $event)"
         @remove="$emit('remove', $event)"
+        @preview="$emit('preview', $event)"
       />
     </div>
   </div>

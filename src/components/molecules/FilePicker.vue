@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const emit = defineEmits<{
-  load: [image: HTMLImageElement]
+  pick: [file: File]
 }>()
 
 const fileInput = ref<HTMLInputElement>()
@@ -14,9 +14,9 @@ const onFileChange = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0]
   if (!file) return
 
-  const img = new Image()
-  img.onload = () => emit('load', img)
-  img.src = URL.createObjectURL(file)
+  emit('pick', file)
+  // Picking the same file again must count as a new pick.
+  ;(event.target as HTMLInputElement).value = ''
 }
 </script>
 

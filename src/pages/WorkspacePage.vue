@@ -64,7 +64,7 @@ const toggleLocale = () => {
   <WorkspaceTemplate>
     <template #panel>
       <DevicePanel
-        :frame="deviceStore.lastFrame"
+        :shown="deviceStore.shown"
         :device-name="deviceName"
         :ip="deviceStore.ip"
         :lost="deviceStore.lost"

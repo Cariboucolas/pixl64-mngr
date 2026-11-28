@@ -72,15 +72,24 @@
     "cropHint": "Drag to move, scroll to zoom.",
     "previewLabel": "Preview of the cropped image",
     "send": "Send to the device",
-    "sending": "Sending…",
     "sent": "Image sent.",
     "labelTitle": "Label in the library (optional)",
     "labelPlaceholder": "E.g. Halo logo",
     "save": "Save to the library",
     "noThanks": "No thanks",
     "saved": "Saved to the library.",
-    "invalidImage": "The file is not a valid image",
-    "errorLoading": "Error loading the image"
+    "errorLoading": "Error loading the image",
+    "frameCount": "{count} frames",
+    "reduced": "The source has {from} frames: {to} are kept, at regular intervals, for the same total duration.",
+    "frameDuration": "Frame duration (ms)",
+    "progress": "Sending… {sent}/{total}",
+    "cancelSend": "Cancel sending",
+    "opening": "Opening the source…",
+    "animationSent": "Animation sent.",
+    "directPlay": "Direct play",
+    "directPlayHint": "The device downloads this GIF itself and plays it as it is: no crop, no 59-frame limit, no preview.",
+    "directPlayChecking": "Checking…",
+    "directPlaySent": "The device is downloading the GIF."
   },
   "library": {
     "searchPlaceholder": "Search…",
@@ -94,7 +103,11 @@
     "deleteConfirmUnlabelled": "This item will be permanently deleted.",
     "sendAriaLabel": "Send to the device",
     "sendErrorAriaLabel": "Sending failed: {message}",
-    "removeAriaLabel": "Remove from the library"
+    "removeAriaLabel": "Remove from the library",
+    "animation": "Animation",
+    "animationBadge": "anim",
+    "migrated": "{migrated} favourites brought into the library.",
+    "migratedWithFailures": "{migrated} favourites brought into the library; {failed} unreadable ones stayed in the old file."
   },
   "errors": {
     "url": {
@@ -115,7 +128,6 @@
       "tooLarge": "Image is too large: {actualMb} MB (maximum: {maxMb} MB)."
     },
     "image": {
-      "dimensionTooLarge": "Image exceeds max dimensions of {max}x{max}px",
       "loadFailed": "Failed to load image"
     },
     "device": {
@@ -127,6 +139,30 @@
       "commandRefused": "The device refused the command (code {errorCode})",
       "unknown": "The exchange with the device failed",
       "notConnected": "No device connected"
+    },
+    "send": {
+      "cancelled": "Send cancelled",
+      "frameCount": "An animation has 1 to {max} frames"
+    },
+    "source": {
+      "unsupported": "Unsupported format: pick a GIF, PNG, JPEG or WebP file",
+      "invalid": "The file is damaged or incomplete",
+      "dimensionTooLarge": "The source is more than 10,000 pixels wide or high",
+      "fileTooLarge": "The file is larger than 20 MB",
+      "tooManyFrames": "The source has more than 2,000 frames",
+      "noSource": "No source is open: import it again"
+    },
+    "library": {
+      "io": "The disk refused to read or write the library",
+      "corrupt": "The library is damaged: its content cannot be read",
+      "notFound": "This item is no longer in the library",
+      "invalidFrames": "This item cannot be saved: it must have 1 to 59 frames of 64 × 64"
+    },
+    "directPlay": {
+      "unsupportedScheme": "Direct play only accepts http:// and https:// URLs",
+      "tooManyRedirects": "Too many redirects before reaching the file",
+      "notGif": "The URL does not point to a GIF file",
+      "wrongSize": "This GIF is {width} × {height} pixels: the device only plays 16 × 16, 32 × 32 or 64 × 64"
     }
   }
 }

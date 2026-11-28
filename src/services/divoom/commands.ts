@@ -66,6 +66,15 @@ export const setMirror = (on: boolean): CommandPayload => ({
   Mode: on ? 1 : 0,
 })
 
+/** `FileType` of `Device/PlayTFGif` for a file the device downloads from a URL. */
+const GIF_FROM_URL = 2
+
+export const playGifUrl = (url: string): CommandPayload => ({
+  Command: 'Device/PlayTFGif',
+  FileType: GIF_FROM_URL,
+  FileName: url,
+})
+
 export const setTime24 = (on: boolean): CommandPayload => ({
   Command: 'Device/SetTime24Flag',
   Mode: on ? 1 : 0,
