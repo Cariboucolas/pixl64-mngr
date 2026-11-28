@@ -51,10 +51,10 @@ La documentation est une application ShowDoc rendue en JavaScript. Son contenu s
 
 | Commande | Paramètres | Notes | Page | Code |
 |---|---|---|---|---|
-| `Draw/SendHttpGif` | `PicNum`, `PicWidth`, `PicOffset`, `PicID`, `PicSpeed`, `PicData` | Voir ci-dessous | 93 | oui, une image |
+| `Draw/SendHttpGif` | `PicNum`, `PicWidth`, `PicOffset`, `PicID`, `PicSpeed`, `PicData` | Voir ci-dessous | 93 | oui |
 | `Draw/GetHttpGifId` | — | Renvoie `PicId`, le prochain identifiant ; firmware ≥ 90095 | 192 | non |
 | `Draw/ResetHttpGifId` | — | Les identifiants repartent de 1 | 236 | oui |
-| `Device/PlayTFGif` | `FileType`, `FileName` | Voir ci-dessous ; firmware ≥ 90096 | 195 | non |
+| `Device/PlayTFGif` | `FileType`, `FileName` | Voir ci-dessous ; firmware ≥ 90096 | 195 | oui, par URL |
 | `Device/GetImgUploadList`, `Device/GetImgLikeList` (en ligne) | `DeviceId`, `DeviceMac`, `Page` | Renvoient `ImgList[{FileName, FileId}]` | 461, 462 | non |
 | `Draw/SendRemote` | `FileId` | Joue un fichier des deux listes ci-dessus | 460 | non |
 
